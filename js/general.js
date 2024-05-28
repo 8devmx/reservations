@@ -3,8 +3,6 @@ const viewForm = document.querySelector('#viewForm')
 const btnNew = document.querySelector('#btnNew')
 const btnSave = document.querySelector('#btnSave')
 const name = document.querySelector('#name')
-const email = document.querySelector('#email')
-const phone = document.querySelector('#phone') 
 const status = document.querySelector('#status')
 
 const showData = () => {
@@ -23,8 +21,3 @@ btnNew.addEventListener('click', (e) => {
   showForm()
 })
 
-btnClose.addEventListener('click', (e) => { 
-  e.preventDefault()
-  clearForm()
-  showData()
-})
