@@ -2,7 +2,11 @@ const viewData = document.querySelector('#viewData')
 const viewForm = document.querySelector('#viewForm')
 const btnNew = document.querySelector('#btnNew')
 const btnSave = document.querySelector('#btnSave')
+const btnClose = document.querySelector('#btnClose')
 const name = document.querySelector('#name')
+const email = document.querySelector('#email')
+const phone = document.querySelector('#phone')
+const rol = document.querySelector('#rol')
 const status = document.querySelector('#status')
 
 
