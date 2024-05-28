@@ -12,6 +12,7 @@ const end_hour = document.querySelector('#end_hour')
 const client_id = document.querySelector('#client_id')
 const user_id = document.querySelector('#user_id')
 const map = document.querySelector('#map')
+const btnDelete = document.querySelectorAll('.btnDelete')
 
 viewForm.classList.add('d-none')
 
@@ -38,3 +39,26 @@ btnClose.addEventListener('click', (e) => {
   showData()
 })
 
+btnDelete.forEach(btn => {
+  btn.addEventListener('click', e => {
+    const confirmDelete = confirm('Deseas eliminar el elemento')
+    if (confirmDelete) {
+
+      const obj = {
+        action: 'delete',
+        id: btn.dataset.id
+      }
+
+      fetch('../../includes/events.php', {
+        method: 'POST',
+        body: JSON.stringify(obj)
+      })
+        .then(response => response.json())
+        .then(json => {
+          alert(json.message)
+          clearForm()
+          showData()
+        })
+    }
+  })
+});

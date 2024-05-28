@@ -24,16 +24,11 @@
           <table class="table table-striped table-sm">
             <thead>
               <tr>
-                <th scope="col">#</th>
                 <th scope="col">Titulo</th>
-                <th scope="col">Descripcion</th>
                 <th scope="col">Fecha de Inicio</th>
-                <th scope="col">Hora de Inicio</th>
                 <th scope="col">Fecha de Fin</th>
-                <th scope="col">Hora de Fin</th>
                 <th scope="col">Cliente</th>
                 <th scope="col">Usuarios</th>
-                <th scope="col">Mapa</th>
                 <th scope="col">Status</th>
               </tr>
             </thead>
@@ -46,26 +41,20 @@
                   <td colspan="11">No se encontraron resultados</td>
                 </tr>
               <?php
-                return false;
               }
 
               while ($row = $result->fetch_object()) {
               ?>
                 <tr>
-                  <td><?php echo $row->id; ?></td>
                   <td><?php echo $row->title; ?></td>
-                  <td><?php echo $row->description; ?></td>
-                  <td><?php echo $row->start_date; ?></td>
-                  <td><?php echo $row->start_hout; ?></td>
-                  <td><?php echo $row->end_date; ?></td>
-                  <td><?php echo $row->end_hour; ?></td>
+                  <td><?php echo $row->start_date . " " . $row->start_hout; ?></td>
+                  <td><?php echo $row->end_date . " " . $row->end_hour; ?></td>
                   <td><?php echo $row->client_id; ?></td>
                   <td><?php echo $row->user_id; ?></td>
-                  <td><?php echo $row->map; ?></td>
                   <td><?php echo $row->active == 1 ? "Activo" : "Inactivo"; ?></td>
                   <td>
-                    <button type="button" class="btn btn-warning">Editar</button>
-                    <button type="button" class="btn btn-danger">Eliminar</button>
+                    <button type="button" class="btn btn-warning btnEdit">Editar</button>
+                    <button type="button" class="btn btn-danger btnDelete" data-id="<?php echo $row->id; ?>">Eliminar</button>
                   </td>
                 </tr>
               <?php
@@ -136,14 +125,14 @@
     const clearForm = () => {
       title.value = ''
       status.value = 0
-      description.value=''
-      start_date.value=''
-      start_hout.value=''
-      end_date.value=''
-      end_hour.value=''
-      client_id.value= ''
-      user_id.value= ''
-      map.value=''
+      description.value = ''
+      start_date.value = ''
+      start_hout.value = ''
+      end_date.value = ''
+      end_hour.value = ''
+      client_id.value = ''
+      user_id.value = ''
+      map.value = ''
 
     }
     btnSave.addEventListener('click', (e) => {
