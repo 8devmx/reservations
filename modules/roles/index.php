@@ -50,7 +50,7 @@
                   <td><?php echo $row->active == 1 ? "Activo" : "Inactivo"; ?></td>
                   <td>
                     <button type="button" class="btn btn-warning">Editar</button>
-                    <button type="button" class="btn btn-danger">Eliminar</button>
+                    <button type="button" class="btn btn-Delete" data-id="<?php echo $row->id; ?>">Eliminar</button>
                   </td>
                 </tr>
               <?php
