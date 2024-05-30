@@ -7,6 +7,10 @@ if ($post) {
       $roles = new Roles();
       $roles->insertData($post);
       break;
+      case 'delete':
+        $events = new Roles();
+        $events->deleteData($post);
+        break;
   }
 }
 class Roles
@@ -37,4 +41,22 @@ class Roles
     }
     echo json_encode($response);
   }
+  {
+    $id = $data['id'];
+    global $mysqli;
+    $query = "DELETE FROM roles where id =  $id";
+    $response = [
+      "message" => "No se pudo eliminar el registro en la base de datos",
+      "status" => 0
+    ];
+
+    if ($mysqli->query($query)) {
+      $response = [
+        "message" => "Se ha eliminado el registro en la base de datos",
+        "status" => 1
+      ];
+    }
+    echo json_encode($response);
+  }
 }
+
