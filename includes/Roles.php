@@ -44,7 +44,7 @@ class Roles
   {
     $id = $data['id'];
     global $mysqli;
-    $query = "DELETE FROM rols where id =  $id";
+    $query = "DELETE FROM roles where id =  $id";
     $response = [
       "message" => "No se pudo eliminar el registro en la base de datos",
       "status" => 0
