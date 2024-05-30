@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+<link rel="stylesheet" href="../../css/styles.css">
   <?php
   include_once '../../includes/head.php';
   require_once '../../includes/Clients.php';
@@ -52,7 +53,7 @@
                     <td><?php echo $row->active == 1 ? "Activo" : "Inactivo"; ?></td>
                     <td>
                       <button type="button" class="btn btn-warning">Editar</button>
-                      <button type="button" class="btn btn-danger">Eliminar</button>
+                      <button type="button" class="btn btn-danger btnDelete" data-id="<?php echo $row->id; ?>">Eliminar</button>
                     </td>
                   </tr>
               <?php
@@ -97,7 +98,7 @@
     </div>
   </div>
 
-  <script src="../../js/general.js"></script>
+  <script src="../../js/generalclients.js"></script>
   <script>
     const clearForm = () => {
       document.querySelector('#name').value = ''
@@ -130,6 +131,35 @@
           clearForm()
           showData()
         })
+    })
+
+    // Event listener for delete buttons
+    document.querySelectorAll('.btnDelete').forEach(button => {
+      button.addEventListener('click', (e) => {
+        e.preventDefault()
+        const id = button.getAttribute('data-id')
+        if (confirm('¿Está seguro que desea eliminar este cliente?')) {
+          const obj = {
+            action: 'delete',
+            id: id
+          }
+
+          fetch('../../includes/Clients.php', {
+            method: 'POST',
+            body: JSON.stringify(obj),
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          })
+          .then(response => response.json())
+          .then(json => {
+            alert(json.message)
+            if (json.status === 1) {
+              button.closest('tr').remove()
+            }
+          })
+        }
+      })
     })
   </script>
 </body>
