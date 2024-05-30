@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-<link rel="stylesheet" href="../../css/clients.css">
+<link rel="stylesheet" href="../../css/styles.css">
   <?php
   include_once '../../includes/head.php';
   require_once '../../includes/Clients.php';
@@ -98,7 +98,8 @@
     </div>
   </div>
 
-  <script src="../../js/generalclients.js">
+  <script src="../../js/generalclients.js"></script>
+  <script>
     const clearForm = () => {
       document.querySelector('#name').value = ''
       document.querySelector('#email').value = ''
@@ -132,7 +133,7 @@
         })
     })
 
-   
+    // Event listener for delete buttons
     document.querySelectorAll('.btnDelete').forEach(button => {
       button.addEventListener('click', (e) => {
         e.preventDefault()
