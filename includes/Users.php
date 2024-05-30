@@ -34,10 +34,30 @@ class User
     }
     echo json_encode($response);
   }
+  
+  public function deleteData($id)
+  {
+    global $mysqli;
+    $id = (int) $id;
+    $query = "DELETE FROM users WHERE id = $id";
+    $mysqli->query($query);
+    $response = [
+      "message" => "No se pudo eliminar el registro",
+      "status" => 0
+    ];
+    if ($mysqli->affected_rows > 0) {
+      $response = [
+        "message" => "Se eliminó correctamente el Cliente",
+        "status" => 1
+      ];
+    }
+    echo json_encode($response);
+  }
 }
 
 if ($post && $post['action'] == 'insert') {
   $user = new User();
   $user->insertData($post);
 }
+
 ?>

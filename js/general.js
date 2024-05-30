@@ -30,3 +30,8 @@ btnNew.addEventListener('click', (e) => {
   showForm()
 })
 
+btnClose.addEventListener('click', (e) => {
+  e.preventDefault()
+  clearForm()
+  showData()
+})

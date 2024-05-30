@@ -55,7 +55,7 @@
                   <td><?php echo $row->active == 1 ? "Activo" : "Inactivo"; ?></td>
                   <td>
                     <button type="button" class="btn btn-warning">Editar</button>
-                    <button type="button" class="btn btn-danger">Eliminar</button>
+                    <button type="button" class="btn btn-danger btnDelete" data-id="<?php echo $row->id; ?>">Eliminar</button>
                   </td>
                 </tr>
               <?php
@@ -125,7 +125,21 @@
         rol: rol.value,
         status: status.value
       }
+      
+      document.querySelectorAll('.btnDelete').forEach(button => {
+      button.addEventListener('click', (e) => {
+      e.preventDefault();
+      const id = button.getAttribute('data-id');
+      if (confirm('¿Estás seguro que deseas eliminar este cliente?')) {
+      const obj = {
+        action: 'Delete',
+        id: id
+      };
+    }
+  });
+});
 
+      
       fetch('../../includes/Users.php', {
         method: 'POST',
         headers: {
@@ -144,6 +158,7 @@
       })
       .catch(error => console.error('Error:', error));
     })
+
   </script>
 </body>
 
