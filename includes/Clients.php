@@ -7,6 +7,10 @@ if ($post) {
       $clients = new Clients();
       $clients->insertData($post);
       break;
+    case 'delete':
+      $clients = new Clients();
+      $clients->deleteData($post['id']);
+      break;
   }
 }
 
@@ -35,6 +39,25 @@ class Clients
     if ($mysqli->insert_id != 0) {
       $response = [
         "message" => "Se registró correctamente el Cliente de " . $name,
+        "status" => 1
+      ];
+    }
+    echo json_encode($response);
+  }
+
+  public function deleteData($id)
+  {
+    global $mysqli;
+    $id = (int) $id;
+    $query = "DELETE FROM clients WHERE id = $id";
+    $mysqli->query($query);
+    $response = [
+      "message" => "No se pudo eliminar el registro",
+      "status" => 0
+    ];
+    if ($mysqli->affected_rows > 0) {
+      $response = [
+        "message" => "Se eliminó correctamente el Cliente",
         "status" => 1
       ];
     }
