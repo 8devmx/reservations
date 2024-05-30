@@ -2,6 +2,27 @@
 $post = json_decode(file_get_contents('php://input'), true);
 require_once '_db.php';
 
+if ($post) {
+  switch ($post['action']) {
+    case 'insert':
+      $users = new User();
+      $users->insertData($post);
+      break;
+    case 'delete':
+      $users = new User();
+      $users->deleteData($post);
+      break;
+    case 'selectOne':
+      $users = new User();
+      $users->getOneData($post);
+      break;
+    case 'update':
+      $users = new User();
+      $users->updateData($post);
+      break;
+  }
+}
+
 class User
 {
   public function getAllData()
@@ -10,7 +31,41 @@ class User
     $query = "SELECT users.id, users.name as name, users.email, users.phone, users.active, roles.name as rol FROM users LEFT JOIN roles on users.rol_id = roles.id";
     return $mysqli->query($query);
   }
-  
+  public function getOneData($post)
+  {
+    $id = $post['id'];
+    global $mysqli;
+    $query = "SELECT * FROM users where id = $id";
+    $result = $mysqli->query($query);
+    echo json_encode($result->fetch_object());
+  }
+  public function updateData($post)
+  {
+    $name = $post['name'];
+    $email = $post['email'];
+    $phone = $post['phone'];
+    $rol = $post['rol'];
+    $status = $post['status'];
+    $id = $post['id'];
+
+    $query = "update users set name = '$name', email = '$email', phone = '$phone', rol_id = '$rol', active = '$status' where id = $id";
+
+    global $mysqli;
+    $mysqli->query($query);
+
+    $response = [
+      "message" => "No se pudo editar el registro en la base de datos",
+      "status" => 1
+    ];
+    if ($mysqli->affected_rows > 0) {
+      $response = [
+        "message" => "Se editó correctamente el usuario de " . $name,
+        "status" => 2
+      ];
+    }
+    echo json_encode($response);
+  }
+
   public function insertData($data)
   {
     global $mysqli;
@@ -34,7 +89,7 @@ class User
     }
     echo json_encode($response);
   }
-  
+
   public function deleteData($id)
   {
     global $mysqli;
@@ -59,5 +114,3 @@ if ($post && $post['action'] == 'insert') {
   $user = new User();
   $user->insertData($post);
 }
-
-?>
