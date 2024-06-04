@@ -49,7 +49,7 @@
                   <td><?php echo $row->name; ?></td>
                   <td><?php echo $row->active == 1 ? "Activo" : "Inactivo"; ?></td>
                   <td>
-                    <button type="button" class="btn btn-warning">Editar</button>
+                    <button type="button" class="btn btn-warning btnEdit" data-id="<?php echo $row->id; ?>">Editar</button>
                     <button type="button" class="btn btn-danger btnDelete" data-id="<?php echo $row->id; ?>">Eliminar</button>
                   </td>
                 </tr>
@@ -99,17 +99,67 @@
         status: status.value
       }
 
+      if (btnSave.hasAttribute('data-id')) {
+        obj.action = 'update'
+        obj.id = btnSave.getAttribute('data-id')
+      }
+
       fetch('../../includes/Roles.php', {
           method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
           body: JSON.stringify(obj)
         })
         .then(response => response.json())
         .then(json => {
-          alert(json.message)
-          clearForm()
-          showData()
+          alert(json.message);
+          if (json.status === 2) {
+            clearForm();
+            showData();
+            btnSave.removeAttribute('data-id');
+            btnSave.textContent = 'Registrar'
+            location.reload()
+          }
         })
-
+        .catch(error => console.error('Error:', error));
+    })
+    document.querySelectorAll('.btnDelete').forEach(button => {
+      button.addEventListener('click', (e) => {
+        e.preventDefault();
+        const id = button.getAttribute('data-id');
+        if (confirm('¿Estás seguro que deseas eliminar este cliente?')) {
+          const obj = {
+            action: 'Delete',
+            id: id
+          };
+        }
+      });
+    });
+    document.querySelectorAll('.btnEdit').forEach(button => {
+      button.addEventListener('click', (e) => {
+        e.preventDefault()
+        showForm()
+        const id = button.getAttribute('data-id')
+        const obj = {
+          action: 'selectOne',
+          id
+        }
+        fetch('../../includes/Roles.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(obj)
+          })
+          .then(response => response.json())
+          .then(json => {
+            name.value = json.name  
+            status.value = json.active
+            btnSave.textContent = 'Editar'
+            btnSave.dataset.id = id
+          })
+      })
     })
   </script>
 </body>
