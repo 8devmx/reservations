@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-<link rel="stylesheet" href="../../css/styles.css">
+  <link rel="stylesheet" href="../../css/styles.css">
   <?php
   include_once '../../includes/head.php';
   require_once '../../includes/Clients.php';
@@ -52,7 +52,7 @@
                     <td><?php echo $row->phone; ?></td>
                     <td><?php echo $row->active == 1 ? "Activo" : "Inactivo"; ?></td>
                     <td>
-                      <button type="button" class="btn btn-warning">Editar</button>
+                      <button type="button" class="btn btn-warning btnEdit" data-id="<?php echo $row->id; ?>">Editar</button>
                       <button type="button" class="btn btn-danger btnDelete" data-id="<?php echo $row->id; ?>">Eliminar</button>
                     </td>
                   </tr>
@@ -101,48 +101,54 @@
   <script src="../../js/generalclients.js"></script>
   <script>
     const clearForm = () => {
-      document.querySelector('#name').value = ''
-      document.querySelector('#email').value = ''
-      document.querySelector('#phone').value = ''
-      document.querySelector('#status').value = 0
-    }
+      document.querySelector('#name').value = '';
+      document.querySelector('#email').value = '';
+      document.querySelector('#phone').value = '';
+      document.querySelector('#status').value = 0;
+      btnSave.textContent = 'Registrar';
+      delete btnSave.dataset.id;
+    };
 
     document.querySelector('#btnSave').addEventListener('click', (e) => {
-      e.preventDefault()
+  e.preventDefault()
 
-      const obj = {
-        action: 'insert',
-        name: document.querySelector('#name').value,
-        email: document.querySelector('#email').value,
-        phone: document.querySelector('#phone').value,
-        status: document.querySelector('#status').value
+  const id = btnSave.dataset.id;
+  const action = id ? 'update' : 'insert';
+
+  const obj = {
+    action,
+    id: id ? id : null,
+    name: document.querySelector('#name').value,
+    email: document.querySelector('#email').value,
+    phone: document.querySelector('#phone').value,
+    status: document.querySelector('#status').value
+  }
+
+  fetch('../../includes/Clients.php', {
+      method: 'POST',
+      body: JSON.stringify(obj),
+      headers: {
+        'Content-Type': 'application/json'
       }
-
-      fetch('../../includes/Clients.php', {
-          method: 'POST',
-          body: JSON.stringify(obj),
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-        .then(response => response.json())
-        .then(json => {
-          alert(json.message)
-          clearForm()
-          showData()
-        })
     })
+    .then(response => response.json())
+    .then(json => {
+      alert(json.message)
+      clearForm()
+      showData()
+      location.reload(); 
+    })
+})
 
-    // Event listener for delete buttons
     document.querySelectorAll('.btnDelete').forEach(button => {
       button.addEventListener('click', (e) => {
-        e.preventDefault()
-        const id = button.getAttribute('data-id')
+        e.preventDefault();
+        const id = button.getAttribute('data-id');
         if (confirm('¿Está seguro que desea eliminar este cliente?')) {
           const obj = {
             action: 'delete',
             id: id
-          }
+          };
 
           fetch('../../includes/Clients.php', {
             method: 'POST',
@@ -153,14 +159,42 @@
           })
           .then(response => response.json())
           .then(json => {
-            alert(json.message)
+            alert(json.message);
             if (json.status === 1) {
-              button.closest('tr').remove()
+              button.closest('tr').remove();
             }
-          })
+          });
         }
-      })
-    })
+      });
+    });
+
+    document.querySelectorAll('.btnEdit').forEach(button => {
+      button.addEventListener('click', (e) => {
+        e.preventDefault();
+        showForm();
+        const id = button.getAttribute('data-id');
+        const obj = {
+          action: 'selectOne',
+          id
+        };
+        fetch('../../includes/Clients.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(obj)
+          })
+          .then(response => response.json())
+          .then(json => {
+            document.querySelector('#name').value = json.name;
+            document.querySelector('#email').value = json.email;
+            document.querySelector('#phone').value = json.phone;
+            document.querySelector('#status').value = json.active;
+            btnSave.textContent = 'Editar';
+            btnSave.dataset.id = id;
+          });
+      });
+    });
   </script>
 </body>
 
