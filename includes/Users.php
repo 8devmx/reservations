@@ -3,21 +3,21 @@ $post = json_decode(file_get_contents('php://input'), true);
 require_once '_db.php';
 
 if ($post) {
+  $users = new User();
   switch ($post['action']) {
+    case 'showData':
+      $users->getAllData();
+      break;
     case 'insert':
-      $users = new User();
       $users->insertData($post);
       break;
     case 'delete':
-      $users = new User();
-      $users->deleteData($post);
+      $users->deleteData($post["id"]);
       break;
     case 'selectOne':
-      $users = new User();
       $users->getOneData($post);
       break;
     case 'update':
-      $users = new User();
       $users->updateData($post);
       break;
   }
@@ -29,7 +29,12 @@ class User
   {
     global $mysqli;
     $query = "SELECT users.id, users.name as name, users.email, users.phone, users.active, roles.name as rol FROM users LEFT JOIN roles on users.rol_id = roles.id";
-    return $mysqli->query($query);
+    $data = [];
+    $result = $mysqli->query($query);
+    while ($row = $result->fetch_object()) {
+      $data[] = $row;
+    }
+    echo json_encode($data);
   }
   public function getOneData($post)
   {
@@ -93,7 +98,6 @@ class User
   public function deleteData($id)
   {
     global $mysqli;
-    $id = (int) $id;
     $query = "DELETE FROM users WHERE id = $id";
     $mysqli->query($query);
     $response = [
@@ -108,9 +112,4 @@ class User
     }
     echo json_encode($response);
   }
-}
-
-if ($post && $post['action'] == 'insert') {
-  $user = new User();
-  $user->insertData($post);
 }

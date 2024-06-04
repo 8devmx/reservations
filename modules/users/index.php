@@ -32,36 +32,7 @@
                 <th scope="col">Status</th>
               </tr>
             </thead>
-            <tbody>
-              <?php
-              $result = $user->getAllData();
-              if ($result->num_rows == 0) {
-              ?>
-                <tr class="text-center">
-                  <td colspan="7">No se encontraron resultados</td>
-                </tr>
-              <?php
-                return false;
-              }
-
-              while ($row = $result->fetch_object()) {
-              ?>
-                <tr>
-                  <td><?php echo $row->id; ?></td>
-                  <td><?php echo $row->name; ?></td>
-                  <td><?php echo $row->email; ?></td>
-                  <td><?php echo $row->phone; ?></td>
-                  <td><?php echo $row->rol; ?></td>
-                  <td><?php echo $row->active == 1 ? "Activo" : "Inactivo"; ?></td>
-                  <td>
-                    <button type="button" class="btn btn-warning btnEdit" data-id="<?php echo $row->id; ?>">Editar</button>
-                    <button type="button" class="btn btn-danger btnDelete" data-id="<?php echo $row->id; ?>">Eliminar</button>
-                  </td>
-                </tr>
-              <?php
-              }
-              ?>
-            </tbody>
+            <tbody id="results"></tbody>
           </table>
         </div>
       </main>
@@ -146,31 +117,18 @@
             showData();
             btnSave.removeAttribute('data-id');
             btnSave.textContent = 'Registrar'
-            location.reload()
           }
+          getAllData()
         })
         .catch(error => console.error('Error:', error));
     })
-    document.querySelectorAll('.btnDelete').forEach(button => {
-      button.addEventListener('click', (e) => {
-        e.preventDefault();
-        const id = button.getAttribute('data-id');
-        if (confirm('¿Estás seguro que deseas eliminar este cliente?')) {
-          const obj = {
-            action: 'Delete',
-            id: id
-          };
-        }
-      });
-    });
-    document.querySelectorAll('.btnEdit').forEach(button => {
-      button.addEventListener('click', (e) => {
-        e.preventDefault()
-        showForm()
-        const id = button.getAttribute('data-id')
+    const deleteData = e => {
+      e.preventDefault();
+      const id = e.target.getAttribute('data-id');
+      if (confirm('¿Estás seguro que deseas eliminar este cliente?')) {
         const obj = {
-          action: 'selectOne',
-          id
+          action: 'delete',
+          id: id
         }
         fetch('../../includes/Users.php', {
             method: 'POST',
@@ -181,15 +139,81 @@
           })
           .then(response => response.json())
           .then(json => {
-            name.value = json.name
-            email.value = json.email
-            phone.value = json.phone
-            rol.value = json.rol_id
-            status.value = json.active
-            btnSave.textContent = 'Editar'
-            btnSave.dataset.id = id
+            getAllData()
           })
-      })
+      }
+    }
+
+    const editData = e => {
+      e.preventDefault()
+      showForm()
+      const id = e.target.getAttribute('data-id')
+      const obj = {
+        action: 'selectOne',
+        id
+      }
+      fetch('../../includes/Users.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(obj)
+        })
+        .then(response => response.json())
+        .then(json => {
+          name.value = json.name
+          email.value = json.email
+          phone.value = json.phone
+          rol.value = json.rol_id
+          status.value = json.active
+          btnSave.textContent = 'Editar'
+          btnSave.dataset.id = id
+        })
+    }
+
+    const getAllData = () => {
+      const obj = {
+        action: 'showData'
+      }
+      fetch('../../includes/Users.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(obj)
+        })
+        .then(response => response.json())
+        .then(json => {
+          let rowTemplate = ''
+          json.forEach(row => {
+            rowTemplate += `
+            <tr>
+              <td>${row.id}</td>
+              <td>${row.name}</td>
+              <td>${row.email}</td>
+              <td>${row.phone}</td>
+              <td>${row.rol}</td>
+              <td>${row.active}</td>
+              <td>
+                <button type="button" class="btn btn-warning btnEdit" data-id="${row.id}">Editar</button>
+                <button type="button" class="btn btn-danger btnDelete" data-id="${row.id}">Eliminar</button>
+              </td>
+            </tr>
+            `
+          })
+          results.innerHTML = rowTemplate
+        })
+    }
+    getAllData()
+
+    results.addEventListener('click', e => {
+      e.preventDefault()
+      if (e.target.classList.contains('btnEdit')) {
+        editData(e)
+      }
+      if (e.target.classList.contains('btnDelete')) {
+        deleteData(e)
+      }
     })
   </script>
 </body>
