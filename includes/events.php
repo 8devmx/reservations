@@ -1,8 +1,13 @@
 <?php
 $post = json_decode(file_get_contents('php://input'), true);
 require_once '_db.php';
+
 if ($post) {
+  $events = new Events();
   switch ($post['action']) {
+    case 'showData':
+      $events->getAllData();
+      break;
     case 'insert':
       $events = new Events();
       $events->insertData($post);
@@ -11,6 +16,14 @@ if ($post) {
       $events = new Events();
       $events->deleteData($post);
       break;
+    case 'selectOne':
+      $events = new Events();
+      $events->getOneData($post);
+      break;
+    case 'update':
+      $events = new Events();
+      $events->updateData($post);
+      break;
   }
 }
 class Events
@@ -18,8 +31,70 @@ class Events
   public function getAllData()
   {
     global $mysqli;
-    $query = "SELECT*FROM events";
-    return $mysqli->query($query);
+    $query = "SELECT 
+            events.id, 
+            events.title as title, 
+            events.description, 
+            events.start_date, 
+            events.start_hout, 
+            events.end_date, 
+            events.end_hour, 
+            events.map, 
+            events.client_id, 
+            events.user_id, 
+            events.active, 
+            clients.name as client,
+            users.name as user
+        FROM events 
+        LEFT JOIN clients on events.client_id = clients.id
+        LEFT JOIN users on events.user_id = users.id";
+        $data = [];
+        $result = $mysqli->query($query);
+        while ($row = $result->fetch_object()) {
+          $data[] = $row;
+        }
+        echo json_encode($data);
+  }
+
+  public function getOneData($post)
+  {
+    $id = $post['id'];
+    global $mysqli;
+    $query = "SELECT * FROM events where id = $id";
+    $result = $mysqli->query($query);
+    echo json_encode($result->fetch_object());
+  }
+
+  public function updateData($post)
+  {
+    $title = $post['title'];
+    $description = $post['description'];
+    $start_date = $post['start_date'];
+    $start_hout = $post['start_hout'];
+    $end_date = $post['end_date'];
+    $end_hour = $post['end_hour'];
+    $client = $post['client'];
+    $user = $post['user'];
+    $map = $post['map'];
+    $status = $post['status'];
+    $id = $post['id'];
+
+    $query = "UPDATE events SET title = '$title', description = '$description', start_date = '$start_date', start_hout = '$start_hout', end_date = '$end_date', end_hour = '$end_hour',  client_id = '$client', user_id = '$user', map = '$map', active = '$status' WHERE id = $id";
+
+    global $mysqli;
+    $mysqli->query($query);
+
+    $response = [
+      "message" => "No se pudo editar el registro en la base de datos",
+      "status" => 1
+    ];
+    if ($mysqli->affected_rows > 0) {
+      $response = [
+        "message" => "Se editó correctamente el usuario de " . $title,
+        "status" => 2
+      ];
+    }
+    echo json_encode($response);
   }
 
   public function insertData($data)
@@ -65,8 +140,8 @@ class Events
 
   public function deleteData($data)
   {
-    $id = $data['id'];
     global $mysqli;
+    $id = $data['id'];
     $query = "DELETE FROM events where id =  $id";
     $response = [
       "message" => "No se pudo eliminar el registro en la base de datos",
@@ -82,3 +157,4 @@ class Events
     echo json_encode($response);
   }
 }
+?>
