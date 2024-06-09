@@ -18,13 +18,25 @@
       <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4" id="viewData">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
           <h1 class="h2">Roles</h1>
-          <button class="btn btn-warning" id="btnNew">+ Nuevo</button>
+          <div class="ml-md-auto d-flex align-items-center">
+          <div class="btn-group me-2" role="group">
+            <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Filtro</button>
+            <ul class="dropdown-menu" id="filterMenu">
+              <li><a class="dropdown-item" href="#" data-status="1">Activo</a></li>
+              <li><a class="dropdown-item" href="#" data-status="0">Inactivo</a></li>
+            </ul>
+          </div>
+              <form class="d-flex custom-margin me-3" id="searchForm">
+                <input class="form-control me-1" type="search" placeholder="Buscar.." name="Search" id="searchInput">
+                <button class="btn btn-outline-secondary" type="submit" value="Buscar">Buscar</button>
+              </form>
+            <button class="btn btn-warning" id="btnNew">+ Nuevo</button>
+          </div>
         </div>
         <div class="table-responsive small">
           <table class="table table-striped table-sm">
             <thead>
               <tr>
-                <th scope="col">#</th>
                 <th scope="col">Nombre</th>
                 <th scope="col">Status</th>
               </tr>
@@ -163,7 +175,7 @@
             rowTemplate += `
             <tr>
               <td>${row.name}</td>
-              <td>${row.active}</td>
+              <td>${row.active == 1 ? "Activo" : "Inactivo"}</td>
               <td>
                 <button type="button" class="btn btn-warning btnEdit" data-id="${row.id}">Editar</button>
                 <button type="button" class="btn btn-danger btnDelete" data-id="${row.id}">Eliminar</button>
@@ -174,19 +186,89 @@
           results.innerHTML = rowTemplate
         })
     }
+
+    document.getElementById('searchForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const query = document.getElementById('searchInput').value;
+      const obj = {
+        action: 'search',
+        query: query
+      }
+      fetch('../../includes/Roles.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(obj)
+        })
+        .then(response => response.json())
+        .then(json => {
+          let rowTemplate = ''
+          json.forEach(row => {
+            rowTemplate += `
+            <tr>
+              <td>${row.name}</td>
+              <td>${row.active == 1 ? "Activo" : "Inactivo"}</td>
+              <td>
+                <button type="button" class="btn btn-warning btnEdit" data-id="${row.id}">Editar</button>
+                <button type="button" class="btn btn-danger btnDelete" data-id="${row.id}">Eliminar</button>
+              </td>
+            </tr>
+            `
+          })
+          results.innerHTML = rowTemplate
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+    document.getElementById('filterMenu').addEventListener('click', (e) => {
+      e.preventDefault();
+      const status = e.target.getAttribute('data-status');
+      const obj = {
+        action: 'filter',
+        status: status
+      }
+      fetch('../../includes/Roles.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(obj)
+        })
+        .then(response => response.json())
+        .then(json => {
+          let rowTemplate = ''
+          json.forEach(row => {
+            rowTemplate += `
+            <tr>
+              <td>${row.name}</td>
+              <td>${row.active == 1 ? "Activo" : "Inactivo"}</td>
+              <td>
+                <button type="button" class="btn btn-warning btnEdit" data-id="${row.id}">Editar</button>
+                <button type="button" class="btn btn-danger btnDelete" data-id="${row.id}">Eliminar</button>
+              </td>
+            </tr>
+            `
+          })
+          results.innerHTML = rowTemplate
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
     getAllData()
 
-      results.addEventListener('click', e => {
-        e.preventDefault()
-        if (e.target.classList.contains('btnEdit')) {
-          editData(e)
-        }
-        if (e.target.classList.contains('btnDelete')) {
-          deleteData(e)
-        }
-      })
+    results.addEventListener('click', e => {
+      e.preventDefault()
+      if (e.target.classList.contains('btnEdit')) {
+        editData(e)
+      }
+      if (e.target.classList.contains('btnDelete')) {
+        deleteData(e)
+      }
+    })
 
   </script>
 </body>
 
 </html>
+

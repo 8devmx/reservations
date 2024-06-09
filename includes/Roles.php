@@ -20,6 +20,12 @@ if ($post) {
     case 'update':
       $roles->updateData($post);
       break;
+    case 'search':
+      $roles->searchData($post['query']);
+      break;
+    case 'filter':
+      $roles->filterData($post['status']);
+      break;
   }
 }
 
@@ -36,6 +42,7 @@ class Roles
     }
     echo json_encode($data);
   }
+
   public function getOneData($post)
   {
     $id = $post['id'];
@@ -44,6 +51,7 @@ class Roles
     $result = $mysqli->query($query);
     echo json_encode($result->fetch_object());
   }
+
   public function updateData($post)
   {
     $name = $post['name'];
@@ -106,4 +114,39 @@ class Roles
     }
     echo json_encode($response);
   }
+
+  public function searchData($query)
+  {
+    global $mysqli;
+    $searchQuery = "%" . $mysqli->real_escape_string($query) . "%";
+    $query = "SELECT * FROM roles WHERE name LIKE ?";
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param("s", $searchQuery);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = [];
+    while ($row = $result->fetch_object()) {
+      $data[] = $row;
+    }
+    $stmt->close();
+    echo json_encode($data);
+  }
+
+  public function filterData($status)
+  {
+    global $mysqli;
+    $status = $mysqli->real_escape_string($status);
+    $query = "SELECT * FROM roles WHERE active = ?";
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param("i", $status);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = [];
+    while ($row = $result->fetch_object()) {
+      $data[] = $row;
+    }
+    $stmt->close();
+    echo json_encode($data);
+  }
 }
+?>
