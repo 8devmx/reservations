@@ -24,6 +24,12 @@ if ($post) {
       $events = new Events();
       $events->updateData($post);
       break;
+    case 'search':
+      $events->searchData($post['query']);
+      break;
+    case 'filtroData':
+      $events->filtroData($post['client_id']);
+      break;
   }
 }
 class Events
@@ -156,5 +162,84 @@ class Events
     }
     echo json_encode($response);
   }
+
+public function searchData($query)
+  {
+    global $mysqli;
+    $searchQuery = "%" . $mysqli->real_escape_string($query) . "%";
+    $query = "SELECT 
+            events.id, 
+            events.title as title, 
+            events.description, 
+            events.start_date, 
+            events.start_hout, 
+            events.end_date, 
+            events.end_hour, 
+            events.map, 
+            events.client_id, 
+            events.user_id, 
+            events.active, 
+            clients.name as client,
+            users.name as user
+        FROM events 
+        LEFT JOIN clients on events.client_id = clients.id
+        LEFT JOIN users on events.user_id = users.id WHERE title LIKE ?";
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param("s", $searchQuery);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $data = [];
+    while ($row = $result->fetch_object()) {
+      $data[] = $row;
+    }
+    $stmt->close();
+    echo json_encode($data);
+  }
+
+  public function filtroData($client_id)
+{
+  global $mysqli;
+  $query = "SELECT 
+          events.id, 
+          events.title as title, 
+          events.description, 
+          events.start_date, 
+          events.start_hout, 
+          events.end_date, 
+          events.end_hour, 
+          events.map, 
+          events.client_id, 
+          events.user_id, 
+          events.active, 
+          clients.name as client,
+          users.name as user
+      FROM events 
+      LEFT JOIN clients on events.client_id = clients.id
+      LEFT JOIN users on events.user_id = users.id
+      WHERE events.client_id = ?";
+  $stmt = $mysqli->prepare($query);
+  $stmt->bind_param("i", $client_id);
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $data = [];
+  while ($row = $result->fetch_object()) {
+    $data[] = $row;
+  }
+  $stmt->close();
+  echo json_encode($data);
+}
+
+  public function getClients()
+{
+  global $mysqli;
+  $query = "SELECT id, name FROM clients";
+  $result = $mysqli->query($query);
+  $clients = [];
+  while ($row = $result->fetch_object()) {
+    $clients[] = $row;
+  }
+  return $clients;
+}
+
 }
 ?>

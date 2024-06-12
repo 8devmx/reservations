@@ -7,6 +7,7 @@
   include_once '../../includes/head.php';
   require_once '../../includes/events.php';
   $events = new Events();
+  $clients = $events->getClients();
   ?>
 </head>
 
@@ -18,13 +19,27 @@
       <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 animate__animated animate__faster" id="viewData">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
           <h1 class="h2">Events</h1>
-          <button class="btn btn-warning" id="btnNew">+ Nuevo</button>
+          <div class="ml-md-auto d-flex align-items-center">
+              <form class="d-flex custom-margin me-3" id="searchForm">
+              <div class="btn-group me-1">
+                <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Selecciona un cliente</button>
+                <ul class="dropdown-menu" id="clientUL">
+                    <?php foreach ($clients as $client): ?><li><a class="dropdown-item" href="#" data-client-id="<?php echo $client->id; ?>"><?php echo $client->name; ?></a></li>
+                    <?php endforeach; ?> 
+                </ul>
+            </div>
+                <input type="search" class="form-control me-1" placeholder="Buscar.." id="searchInput">
+                <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+              </form>
+            <button class="btn btn-warning" id="btnNew" value="Buscar">+ Nuevo</button>
+          </div>
         </div>
         <div class="table-responsive small">
           <table class="table table-striped table-sm">
             <thead>
               <tr>
                 <th scope="col">Titulo</th>
+                <th scope="col">Cliente</th>
                 <th scope="col">Fecha de Inicio</th>
                 <th scope="col">Fecha de Fin</th>
                 <th scope="col">Status</th>
@@ -66,7 +81,7 @@
           </div>
           <div class="form-group">
             <label for="client">Cliente:</label>
-            <input type="text" class="form-control" id="client" name="client" placeholder="Escribe tu nombre tu ID de cliente">
+            <input type="text" class="form-control" id="client" name="client" placeholder="Escribe tu ID de cliente">
           </div>
           <div class="form-group">
             <label for="user">Usuarios:</label>
@@ -128,7 +143,7 @@
       }
 
       fetch('../../includes/events.php', {
-        ethod: 'POST',
+        method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
@@ -145,7 +160,6 @@
           }
           getAllData()
         })
-        .catch(error => console.error('Error:', error));
     })
 
     const deleteData = e => {
@@ -156,7 +170,7 @@
           action: 'delete',
           id: id
         }
-        fetch('../../includes/Events.php', {
+        fetch('../../includes/events.php', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -193,8 +207,8 @@
             start_hout.value = json.start_hout
             end_date.value = json.end_date
             end_hour.value = json.end_hour
-            client.value = json.client_id
-            user.value = json.user_id
+            client.value = json.client
+            user.value = json.user
             map.value = json.map
             status.value = json.active
             btnSave.textContent = 'Editar'
@@ -204,9 +218,9 @@
 
       const getAllData = () => {
       const obj = {
-        action: 'showData'
+        action: 'showData',
       }
-      fetch('../../includes/Events.php', {
+      fetch('../../includes/events.php', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -220,6 +234,7 @@
             rowTemplate += `
             <tr>
               <td>${row.title}</td>
+              <td>${row.client}</td>
               <td>${row.start_date + " " + row.start_hout}</td>
               <td>${row.end_date + " " + row.end_hour}</td>
               <td>${row.active == 1 ? "Activo" : "Inactivo"}</td>
@@ -233,6 +248,82 @@
           results.innerHTML = rowTemplate
         })
     }
+    
+    document.getElementById('searchForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const query = document.getElementById('searchInput').value;
+      const obj = {
+        action: 'search',
+        query: query
+      }
+      fetch('../../includes/events.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(obj)
+        })
+        .then(response => response.json())
+        .then(json => {
+          let rowTemplate = ''
+          json.forEach(row => {
+            rowTemplate += `
+            <tr>
+               <td>${row.title}</td>
+              <td>${row.client}</td>
+              <td>${row.start_date + " " + row.start_hout}</td>
+              <td>${row.end_date + " " + row.end_hour}</td>
+              <td>${row.active == 1 ? "Activo" : "Inactivo"}</td>
+              <td>
+                <button type="button" class="btn btn-warning btnEdit" data-id="${row.id}">Editar</button>
+                <button type="button" class="btn btn-danger btnDelete" data-id="${row.id}">Eliminar</button>
+            </tr>
+            `
+          })
+          results.innerHTML = rowTemplate
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+    document.getElementById('clientUL').addEventListener('click', (e) => {
+    e.preventDefault();
+    if (e.target.classList.contains('dropdown-item')) {
+        const clientId = e.target.getAttribute('data-client-id');
+  const obj = {
+    action: 'filtroData',
+    client_id: clientId
+  }
+  fetch('../../includes/events.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(obj)
+    })
+    .then(response => response.json())
+    .then(json => {
+      let rowTemplate = '';
+      json.forEach(row => {
+        rowTemplate += `
+        <tr>
+          <td>${row.title}</td>
+          <td>${row.client}</td>
+          <td>${row.start_date + " " + row.start_hout}</td>
+          <td>${row.end_date + " " + row.end_hour}</td>
+          <td>${row.active == 1 ? "Activo" : "Inactivo"}</td>
+          <td>
+            <button type="button" class="btn btn-warning btnEdit" data-id="${row.id}">Editar</button>
+            <button type="button" class="btn btn-danger btnDelete" data-id="${row.id}">Eliminar</button>
+          </td>
+        </tr>
+        `;
+      });
+      document.getElementById('results').innerHTML = rowTemplate;
+    })
+    .catch(error => console.error('Error:', error));
+  }
+});
+
     getAllData()
 
       results.addEventListener('click', e => {
@@ -244,8 +335,6 @@
           deleteData(e)
         }
       })
-    
-
   </script>
 </body>
 
