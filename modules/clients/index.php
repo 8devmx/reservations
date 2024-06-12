@@ -1,8 +1,7 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
-  <link rel="stylesheet" href="../../css/styles.css">
   <?php
   include_once '../../includes/head.php';
   require_once '../../includes/Clients.php';
@@ -19,7 +18,18 @@
       <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4" id="viewData">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
           <h1 class="h2">Clientes</h1>
-          <button class="btn btn-warning" id="btnNew">+ Nuevo</button>
+          <div class="ml-md-auto d-flex align-items-center">
+            <div class="btn-group me-2" role="group">
+              <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="position: relative;right: 10px;">Filtro</button>
+              <ul class="dropdown-menu" id="filterMenu">
+                <li><a class="dropdown-item" data-status="all">Todos</a></li>
+                <li><a class="dropdown-item" data-status="1">Activo</a></li>
+                <li><a class="dropdown-item" data-status="0">Inactivo</a></li>
+              </ul>
+            </div>
+            <input type="text" id="searchInput" class="form-control" placeholder="Buscar" style="position: relative; left: -10px;">
+            <button class="btn btn-warning me-2" id="btnNew">+Nuevo</button>
+          </div>
         </div>
         <div class="table-responsive small">
           <table class="table table-striped table-sm">
@@ -33,38 +43,10 @@
                 <th scope="col">Acciones</th>
               </tr>
             </thead>
-            <tbody>
-              <?php
-              $result = $clients->getAllData();
-              if ($result->num_rows == 0) {
-              ?>
-                <tr class="text-center">
-                  <td colspan="6">No se encontraron resultados</td>
-                </tr>
-              <?php
-              } else {
-                while ($row = $result->fetch_object()) {
-              ?>
-                  <tr>
-                    <td><?php echo $row->id; ?></td>
-                    <td><?php echo $row->name; ?></td>
-                    <td><?php echo $row->email; ?></td>
-                    <td><?php echo $row->phone; ?></td>
-                    <td><?php echo $row->active == 1 ? "Activo" : "Inactivo"; ?></td>
-                    <td>
-                      <button type="button" class="btn btn-warning btnEdit" data-id="<?php echo $row->id; ?>">Editar</button>
-                      <button type="button" class="btn btn-danger btnDelete" data-id="<?php echo $row->id; ?>">Eliminar</button>
-                    </td>
-                  </tr>
-              <?php
-                }
-              }
-              ?>
-            </tbody>
+            <tbody id="results"></tbody>
           </table>
         </div>
       </main>
-
       <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 d-none" id="viewForm">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
           <h1 class="h2">Clientes</h1>
@@ -76,15 +58,15 @@
             <input type="text" class="form-control" id="name" name="name" placeholder="Ingresa el nombre">
           </div>
           <div class="form-group col-sm-6">
-            <label for="email">Correo:</label>
-            <input type="email" class="form-control" id="email" name="email" placeholder="Ingresa el correo">
+            <label for="email">Email:</label>
+            <input type="text" class="form-control" id="email" name="email" placeholder="Ingresa el email">
           </div>
           <div class="form-group col-sm-6">
-            <label for="phone">Telefono:</label>
-            <input type="tel" class="form-control" id="phone" name="phone" placeholder="Ingresa el telefono">
+            <label for="phone">Teléfono:</label>
+            <input type="text" class="form-control" id="phone" name="phone" placeholder="Ingresa el teléfono">
           </div>
           <div class="form-group col-sm-6">
-            <label for="status">Status:</label>
+            <label for="status">Status</label>
             <select name="status" id="status" class="form-control">
               <option value="0">Inactivo</option>
               <option value="1">Activo</option>
@@ -97,103 +79,188 @@
       </main>
     </div>
   </div>
-
   <script src="../../js/generalclients.js"></script>
   <script>
     const clearForm = () => {
-      document.querySelector('#name').value = '';
-      document.querySelector('#email').value = '';
-      document.querySelector('#phone').value = '';
-      document.querySelector('#status').value = 0;
-      btnSave.textContent = 'Registrar';
-      delete btnSave.dataset.id;
-    };
+      name.value = '';
+      email.value = '';
+      phone.value = '';
+      status.value = '0';
+    }
 
-    document.querySelector('#btnSave').addEventListener('click', (e) => {
-  e.preventDefault()
+    btnSave.addEventListener('click', (e) => {
+      e.preventDefault();
 
-  const id = btnSave.dataset.id;
-  const action = id ? 'update' : 'insert';
+      let obj = {
+        action: 'insert',
+        name: name.value,
+        email: email.value,
+        phone: phone.value,
+        status: status.value
+      };
 
-  const obj = {
-    action,
-    id: id ? id : null,
-    name: document.querySelector('#name').value,
-    email: document.querySelector('#email').value,
-    phone: document.querySelector('#phone').value,
-    status: document.querySelector('#status').value
-  }
-
-  fetch('../../includes/Clients.php', {
-      method: 'POST',
-      body: JSON.stringify(obj),
-      headers: {
-        'Content-Type': 'application/json'
+      if (btnSave.hasAttribute('data-id')) {
+        obj.action = 'update';
+        obj.id = btnSave.getAttribute('data-id');
       }
-    })
-    .then(response => response.json())
-    .then(json => {
-      alert(json.message)
-      clearForm()
-      showData()
-      location.reload(); 
-    })
-})
 
-    document.querySelectorAll('.btnDelete').forEach(button => {
-      button.addEventListener('click', (e) => {
-        e.preventDefault();
-        const id = button.getAttribute('data-id');
-        if (confirm('¿Está seguro que desea eliminar este cliente?')) {
-          const obj = {
-            action: 'delete',
-            id: id
-          };
-
-          fetch('../../includes/Clients.php', {
-            method: 'POST',
-            body: JSON.stringify(obj),
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          })
-          .then(response => response.json())
-          .then(json => {
-            alert(json.message);
-            if (json.status === 1) {
-              button.closest('tr').remove();
-            }
-          });
+      fetch('../../includes/Clients.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(obj)
+      })
+      .then(response => response.json())
+      .then(json => {
+        alert(json.message);
+        if (json.status === 2) {
+          clearForm();
+          showData();
+          btnSave.removeAttribute('data-id');
+          btnSave.textContent = 'Registrar';
         }
-      });
+        getAllData();
+      })
+      .catch(error => console.error('Error:', error));
     });
 
-    document.querySelectorAll('.btnEdit').forEach(button => {
-      button.addEventListener('click', (e) => {
-        e.preventDefault();
-        showForm();
-        const id = button.getAttribute('data-id');
+    const deleteData = e => {
+      e.preventDefault();
+      const id = e.target.getAttribute('data-id');
+      if (confirm('¿Estás seguro que deseas eliminar este cliente?')) {
         const obj = {
-          action: 'selectOne',
-          id
+          action: 'delete',
+          id: id
         };
         fetch('../../includes/Clients.php', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(obj)
-          })
-          .then(response => response.json())
-          .then(json => {
-            document.querySelector('#name').value = json.name;
-            document.querySelector('#email').value = json.email;
-            document.querySelector('#phone').value = json.phone;
-            document.querySelector('#status').value = json.active;
-            btnSave.textContent = 'Editar';
-            btnSave.dataset.id = id;
-          });
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(obj)
+        })
+        .then(response => response.json())
+        .then(json => {
+          getAllData();
+        });
+      }
+    };
+
+    const editData = e => {
+      e.preventDefault();
+      showForm();
+      const id = e.target.getAttribute('data-id');
+      const obj = {
+        action: 'selectOne',
+        id: id
+      };
+      fetch('../../includes/Clients.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(obj)
+      })
+      .then(response => response.json())
+      .then(json => {
+        name.value = json.name;
+        email.value = json.email;
+        phone.value = json.phone;
+        status.value = json.active;
+        btnSave.textContent = 'Editar';
+        btnSave.dataset.id = id;
       });
+    };
+
+    const getAllData = (query = '') => {
+      const obj = {
+        action: 'showData',
+        query: query
+      };
+      fetch('../../includes/Clients.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(obj)
+      })
+      .then(response => response.json())
+      .then(json => {
+        let rowTemplate = '';
+        json.forEach(row => {
+          rowTemplate += `
+            <tr>
+              <td>${row.id}</td>
+              <td>${row.name}</td>
+              <td>${row.email}</td>
+              <td>${row.phone}</td>
+              <td>${row.active == 1 ? "Activo" : "Inactivo"}</td>
+              <td>
+                <button type="button" class="btn btn-warning btnEdit" data-id="${row.id}">Editar</button>
+                <button type="button" class="btn btn-danger btnDelete" data-id="${row.id}">Eliminar</button>
+              </td>
+            </tr>
+          `;
+        });
+        results.innerHTML = rowTemplate;
+      });
+    };
+
+    document.getElementById('filterMenu').addEventListener('click', (e) => {
+      e.preventDefault();
+      const status = e.target.getAttribute('data-status');
+      const obj = {
+        action: 'filter',
+        status: status
+      };
+      fetch('../../includes/Clients.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(obj)
+      })
+      .then(response => response.json())
+      .then(json => {
+        let rowTemplate = '';
+        json.forEach(row => {
+          rowTemplate += `
+            <tr>
+              <td>${row.id}</td>
+              <td>${row.name}</td>
+              <td>${row.email}</td>
+              <td>${row.phone}</td>
+              <td>${row.active == 1 ? "Activo" : "Inactivo"}</td>
+              <td>
+                <button type="button" class="btn btn-warning btnEdit" data-id="${row.id}">Editar</button>
+                <button type="button" class="btn btn-danger btnDelete" data-id="${row.id}">Eliminar</button>
+              </td>
+            </tr>
+          `;
+        });
+        results.innerHTML = rowTemplate;
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+
+    getAllData();
+
+    results.addEventListener('click', e => {
+      e.preventDefault();
+      if (e.target.classList.contains('btnEdit')) {
+        editData(e);
+      }
+      if (e.target.classList.contains('btnDelete')) {
+        deleteData(e);
+      }
+    });
+
+    const searchInput = document.querySelector('#searchInput');
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.trim();
+      getAllData(query);
     });
   </script>
 </body>
