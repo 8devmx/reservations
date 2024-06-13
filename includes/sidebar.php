@@ -13,7 +13,7 @@
       <a href="http://localhost/modelos-de-bd-primer-parcial/modules/roles/index.php">Roles</a>
     </li>
     <li>
-      <a href="#">Reservaciones</a>
+      <a href="http://localhost/modelos-de-bd-primer-parcial/modules/events/index.php">Reservaciones</a>
     </li>
   </ul>
 </div>
