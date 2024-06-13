@@ -26,7 +26,6 @@ const showForm = () => {
   viewData.classList.add('d-none')
 }
 
-
 btnNew.addEventListener('click', (e) => {
   e.preventDefault()
   clearForm()
