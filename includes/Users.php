@@ -6,7 +6,7 @@ if ($post) {
   $users = new User();
   switch ($post['action']) {
     case 'showData':
-      $users->getAllData();
+      $users->getAllData($post['query'] ?? '');
       break;
     case 'insert':
       $users->insertData($post);
@@ -20,22 +20,36 @@ if ($post) {
     case 'update':
       $users->updateData($post);
       break;
+    case 'filter':
+      $users->filterData($post['role']);
+      break;
   }
 }
 
 class User
 {
-  public function getAllData()
+  public function getAllData($query = '')
   {
     global $mysqli;
-    $query = "SELECT users.id, users.name as name, users.email, users.phone, users.active, roles.name as rol FROM users LEFT JOIN roles on users.rol_id = roles.id";
+    $sql = "SELECT users.id, users.name as name, users.email, users.phone, users.active, roles.name as rol FROM users LEFT JOIN roles on users.rol_id = roles.id";
+    if ($query !== '') {
+      $sql .= " WHERE users.name LIKE ? OR users.email LIKE ? OR users.phone LIKE ?";
+      $stmt = $mysqli->prepare($sql);
+      $search = "%$query%";
+      $stmt->bind_param("sss", $search, $search, $search);
+    } else {
+      $stmt = $mysqli->prepare($sql);
+    }
+    $stmt->execute();
+    $result = $stmt->get_result();
     $data = [];
-    $result = $mysqli->query($query);
     while ($row = $result->fetch_object()) {
       $data[] = $row;
     }
+    $stmt->close();
     echo json_encode($data);
   }
+
   public function getOneData($post)
   {
     $id = $post['id'];
@@ -44,6 +58,7 @@ class User
     $result = $mysqli->query($query);
     echo json_encode($result->fetch_object());
   }
+
   public function updateData($post)
   {
     $name = $post['name'];
@@ -112,4 +127,25 @@ class User
     }
     echo json_encode($response);
   }
+  public function filterData($role)
+{
+  global $mysqli;
+  if ($role === 'all') {
+    $query = "SELECT * FROM users";
+    $stmt = $mysqli->prepare($query);
+  } else {
+    $query = "SELECT * FROM users WHERE rol_id = ?";
+    $stmt = $mysqli->prepare($query);
+    $stmt->bind_param("i", $role);
+  }
+  $stmt->execute();
+  $result = $stmt->get_result();
+  $data = [];
+  while ($row = $result->fetch_object()) {
+    $data[] = $row;
+  }
+  $stmt->close();
+  echo json_encode($data);
 }
+}
+?>

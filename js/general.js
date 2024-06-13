@@ -8,7 +8,6 @@ const email = document.querySelector('#email')
 const phone = document.querySelector('#phone')
 const rol = document.querySelector('#rol')
 const status = document.querySelector('#status')
-const btnClose = document.querySelector('#btnClose');
 
 
 viewForm.classList.add('d-none')

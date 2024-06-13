@@ -14,11 +14,21 @@
   <div class="container-fluid">
     <div class="row">
       <?php include_once '../../includes/sidebar.php'; ?>
-
       <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4" id="viewData">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
           <h1 class="h2">Users</h1>
-          <button class="btn btn-warning" id="btnNew">+ Nuevo</button>
+          <div class="ml-md-auto d-flex align-items-center">
+            <div class="btn-group me-2" role="group">
+              <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="position: relative;right: 10px;">Filtro</button>
+              <ul class="dropdown-menu" id="filterMenu">
+                <li><a class="dropdown-item" data-role="all">Todos</a></li>
+                <li><a class="dropdown-item" data-role="1">Usuario</a></li>
+                <li><a class="dropdown-item" data-role="2">Administrador</a></li>
+              </ul>
+            </div>
+            <input type="text" id="searchInput" class="form-control" placeholder="Buscar..." style="position: relative; left: -10px;">
+            <button class="btn btn-warning me-2" id="btnNew">+Nuevo</button>
+          </div>
         </div>
         <div class="table-responsive small">
           <table class="table table-striped table-sm">
@@ -171,9 +181,10 @@
         })
     }
 
-    const getAllData = () => {
+    const getAllData = (query = '') => {
       const obj = {
-        action: 'showData'
+        action: 'showData',
+        query: query
       }
       fetch('../../includes/Users.php', {
           method: 'POST',
@@ -193,7 +204,7 @@
               <td>${row.email}</td>
               <td>${row.phone}</td>
               <td>${row.rol}</td>
-              <td>${row.active}</td>
+              <td>${row.active == 1 ? "Activo" : "Inactivo"}</td>
               <td>
                 <button type="button" class="btn btn-warning btnEdit" data-id="${row.id}">Editar</button>
                 <button type="button" class="btn btn-danger btnDelete" data-id="${row.id}">Eliminar</button>
@@ -204,6 +215,45 @@
           results.innerHTML = rowTemplate
         })
     }
+
+    document.getElementById('filterMenu').addEventListener('click', (e) => {
+      e.preventDefault();
+      const role = e.target.getAttribute('data-role');
+      const obj = {
+        action: 'filter',
+        role: role
+      };
+      fetch('../../includes/Users.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(obj)
+        })
+        .then(response => response.json())
+        .then(json => {
+          let rowTemplate = '';
+          json.forEach(row => {
+            rowTemplate += `
+        <tr>
+          <td>${row.id}</td>
+          <td>${row.name}</td>
+          <td>${row.email}</td>
+          <td>${row.phone}</td>
+          <td>${row.rol}</td>
+          <td>${row.active == 1 ? "Activo" : "Inactivo"}</td>
+          <td>
+            <button type="button" class="btn btn-warning btnEdit" data-id="${row.id}">Editar</button>
+            <button type="button" class="btn btn-danger btnDelete" data-id="${row.id}">Eliminar</button>
+          </td>
+        </tr>
+      `;
+          });
+          results.innerHTML = rowTemplate;
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
     getAllData()
 
     results.addEventListener('click', e => {
@@ -215,6 +265,11 @@
         deleteData(e)
       }
     })
+    const searchInput = document.querySelector('#searchInput');
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.trim();
+      getAllData(query);
+    });
   </script>
 </body>
 
