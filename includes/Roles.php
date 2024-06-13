@@ -31,12 +31,19 @@ if ($post) {
 
 class Roles
 {
-  public function getAllData()
+  private $mysqli;
+
+  public function __construct()
   {
     global $mysqli;
+    $this->mysqli = $mysqli;
+  }
+
+  public function getAllData()
+  {
     $query = "SELECT * FROM roles";
+    $result = $this->mysqli->query($query);
     $data = [];
-    $result = $mysqli->query($query);
     while ($row = $result->fetch_object()) {
       $data[] = $row;
     }
@@ -46,9 +53,8 @@ class Roles
   public function getOneData($post)
   {
     $id = $post['id'];
-    global $mysqli;
-    $query = "SELECT * FROM roles where id = $id";
-    $result = $mysqli->query($query);
+    $query = "SELECT * FROM roles WHERE id = $id";
+    $result = $this->mysqli->query($query);
     echo json_encode($result->fetch_object());
   }
 
@@ -58,18 +64,16 @@ class Roles
     $status = $post['status'];
     $id = $post['id'];
 
-    $query = "update roles set name = '$name', active = '$status' where id = $id";
-
-    global $mysqli;
-    $mysqli->query($query);
+    $query = "UPDATE roles SET name = '$name', active = '$status' WHERE id = $id";
+    $this->mysqli->query($query);
 
     $response = [
       "message" => "No se pudo editar el registro en la base de datos",
       "status" => 1
     ];
-    if ($mysqli->affected_rows > 0) {
+    if ($this->mysqli->affected_rows > 0) {
       $response = [
-        "message" => "Se editó correctamente el Rol de " . $name,
+        "message" => "Se editó correctamente el Rol de $name",
         "status" => 2
       ];
     }
@@ -78,19 +82,19 @@ class Roles
 
   public function insertData($data)
   {
-    global $mysqli;
     $nombre = $data['name'];
     $status = $data['status'];
+
     $query = "INSERT INTO roles (name, active) VALUES ('$nombre', '$status')";
-    $mysqli->query($query);
+    $this->mysqli->query($query);
 
     $response = [
       "message" => "No se pudo almacenar el registro en la base de datos",
       "status" => 1
     ];
-    if ($mysqli->insert_id != 0) {
+    if ($this->mysqli->insert_id != 0) {
       $response = [
-        "message" => "Se registró correctamente el Rol de " . $nombre,
+        "message" => "Se registró correctamente el Rol de $nombre",
         "status" => 2
       ];
     }
@@ -99,14 +103,14 @@ class Roles
 
   public function deleteData($id)
   {
-    global $mysqli;
     $query = "DELETE FROM roles WHERE id = $id";
-    $mysqli->query($query);
+    $this->mysqli->query($query);
+
     $response = [
       "message" => "No se pudo eliminar el registro",
       "status" => 0
     ];
-    if ($mysqli->affected_rows > 0) {
+    if ($this->mysqli->affected_rows > 0) {
       $response = [
         "message" => "Se eliminó correctamente el Rol",
         "status" => 1
@@ -117,36 +121,26 @@ class Roles
 
   public function searchData($query)
   {
-    global $mysqli;
-    $searchQuery = "%" . $mysqli->real_escape_string($query) . "%";
-    $query = "SELECT * FROM roles WHERE name LIKE ?";
-    $stmt = $mysqli->prepare($query);
-    $stmt->bind_param("s", $searchQuery);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    $search = "%$query%";
+    $query = "SELECT * FROM roles WHERE name LIKE '$search'";
+    $result = $this->mysqli->query($query);
     $data = [];
     while ($row = $result->fetch_object()) {
       $data[] = $row;
     }
-    $stmt->close();
     echo json_encode($data);
   }
 
   public function filterData($status)
   {
-    global $mysqli;
-    $status = $mysqli->real_escape_string($status);
-    $query = "SELECT * FROM roles WHERE active = ?";
-    $stmt = $mysqli->prepare($query);
-    $stmt->bind_param("i", $status);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    $query = ($status == 'all') ? "SELECT * FROM roles" : "SELECT * FROM roles WHERE active = '$status'";
+    $result = $this->mysqli->query($query);
     $data = [];
     while ($row = $result->fetch_object()) {
       $data[] = $row;
     }
-    $stmt->close();
     echo json_encode($data);
   }
 }
 ?>
+

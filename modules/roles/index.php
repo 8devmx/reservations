@@ -22,6 +22,7 @@
           <div class="btn-group me-2" role="group">
             <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Filtro</button>
             <ul class="dropdown-menu" id="filterMenu">
+              <li><a class="dropdown-item" href="#" data-status="all">Todos</a></li>
               <li><a class="dropdown-item" href="#" data-status="1">Activo</a></li>
               <li><a class="dropdown-item" href="#" data-status="0">Inactivo</a></li>
             </ul>
@@ -58,8 +59,8 @@
           <div class="form-group col-sm-6">
             <label for="status">Status</label>
             <select name="status" id="status" class="form-control">
+              <option value="1">Activo</option> 
               <option value="0">Inactivo</option>
-              <option value="1">Activo</option>
             </select>
           </div>
           <div class="form-group mt-3">
@@ -73,7 +74,7 @@
   <script>
     const clearForm = () => {
       name.value = ''
-      status.value = 0
+      status.value = 1
     }
 
     btnSave.addEventListener('click', (e) => {
@@ -220,8 +221,8 @@
         })
         .catch(error => console.error('Error:', error));
     });
-
-    document.getElementById('filterMenu').addEventListener('click', (e) => {
+              //getelemtbyid es para pedirle al html un identificador único este caso el filtermenu.
+    document.getElementById('filterMenu').addEventListener('click', (e) => { 
       e.preventDefault();
       const status = e.target.getAttribute('data-status');
       const obj = {
@@ -271,4 +272,3 @@
 </body>
 
 </html>
-
