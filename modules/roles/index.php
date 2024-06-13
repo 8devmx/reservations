@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-  <link rel="stylesheet" href="../../css/styles.css">
   <?php
   include_once '../../includes/head.php';
   require_once '../../includes/Roles.php';
@@ -16,51 +15,37 @@
     <div class="row">
       <?php include_once '../../includes/sidebar.php'; ?>
 
-      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 animate__animated animate__faster" id="viewData">
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4" id="viewData">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
           <h1 class="h2">Roles</h1>
-          <button class="btn btn-warning" id="btnNew">+ Nuevo</button>
+          <div class="ml-md-auto d-flex align-items-center">
+          <div class="btn-group me-2" role="group">
+            <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Filtro</button>
+            <ul class="dropdown-menu" id="filterMenu">
+              <li><a class="dropdown-item" href="#" data-status="1">Activo</a></li>
+              <li><a class="dropdown-item" href="#" data-status="0">Inactivo</a></li>
+            </ul>
+          </div>
+              <form class="d-flex custom-margin me-3" id="searchForm">
+                <input class="form-control me-1" type="search" placeholder="Buscar.." name="Search" id="searchInput">
+                <button class="btn btn-outline-secondary" type="submit" value="Buscar">Buscar</button>
+              </form>
+            <button class="btn btn-warning" id="btnNew">+ Nuevo</button>
+          </div>
         </div>
         <div class="table-responsive small">
           <table class="table table-striped table-sm">
             <thead>
               <tr>
-                <th scope="col">#</th>
                 <th scope="col">Nombre</th>
                 <th scope="col">Status</th>
               </tr>
             </thead>
-            <tbody>
-              <?php
-              $result = $roles->getAllData();
-              if ($result->num_rows == 0) {
-              ?>
-                <tr class="text-center">
-                  <td colspan="7">No se encontraron resultados</td>
-                </tr>
-              <?php
-                return false;
-              }
-
-              while ($row = $result->fetch_object()) {
-              ?>
-                <tr>
-                  <td><?php echo $row->id; ?></td>
-                  <td><?php echo $row->name; ?></td>
-                  <td><?php echo $row->active == 1 ? "Activo" : "Inactivo"; ?></td>
-                  <td>
-                    <button type="button" class="btn btn-warning">Editar</button>
-                    <button type="button" class="btn btn-danger btnDelete" data-id="<?php echo $row->id; ?>">Eliminar</button>
-                  </td>
-                </tr>
-              <?php
-              }
-              ?>
-            </tbody>
+            <tbody id="results"></tbody>
           </table>
         </div>
       </main>
-      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 animate__animated animate__faster" id="viewForm">
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 d-none" id="viewForm">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
           <h1 class="h2">Roles</h1>
           <button class="btn btn-dark" id="btnClose">Cerrar</button>
@@ -90,28 +75,200 @@
       name.value = ''
       status.value = 0
     }
+
     btnSave.addEventListener('click', (e) => {
       e.preventDefault()
 
-      const obj = {
+      let obj = {
         action: 'insert',
         name: name.value,
-        status: status.value
+        status: status.value,
+      }
+
+      if (btnSave.hasAttribute('data-id')) {
+        obj.action = 'update'
+        obj.id = btnSave.getAttribute('data-id')
       }
 
       fetch('../../includes/Roles.php', {
           method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
           body: JSON.stringify(obj)
         })
         .then(response => response.json())
         .then(json => {
-          alert(json.message)
-          clearForm()
-          showData()
+          alert(json.message);
+          if (json.status === 2) {
+            clearForm();
+            showData();
+            btnSave.removeAttribute('data-id');
+            btnSave.textContent = 'Registrar'
+          }
+          getAllData()
         })
-
+        .catch(error => console.error('Error:', error));
     })
+
+    const deleteData = e => {
+      e.preventDefault();
+      const id = e.target.getAttribute('data-id');
+      if (confirm('¿Estás seguro que deseas eliminar este Rol?')) {
+        const obj = {
+          action: 'delete',
+          id: id
+        }
+        fetch('../../includes/Roles.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(obj)
+          })
+          .then(response => response.json())
+          .then(json => {
+            getAllData()
+          })
+      }
+    }
+
+    const editData = e => {
+      e.preventDefault()
+      showForm()
+      const id = e.target.getAttribute('data-id')
+      const obj = {
+        action: 'selectOne',
+        id
+      }
+      fetch('../../includes/Roles.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(obj)
+        })
+        .then(response => response.json())
+        .then(json => {
+          name.value = json.name
+          status.value = json.active
+          btnSave.textContent = 'Editar'
+          btnSave.dataset.id = id
+        })
+    }
+
+    const getAllData = () => {
+      const obj = {
+        action: 'showData'
+      }
+      fetch('../../includes/Roles.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(obj)
+        })
+        .then(response => response.json())
+        .then(json => {
+          let rowTemplate = ''
+          json.forEach(row => {
+            rowTemplate += `
+            <tr>
+              <td>${row.name}</td>
+              <td>${row.active == 1 ? "Activo" : "Inactivo"}</td>
+              <td>
+                <button type="button" class="btn btn-warning btnEdit" data-id="${row.id}">Editar</button>
+                <button type="button" class="btn btn-danger btnDelete" data-id="${row.id}">Eliminar</button>
+              </td>
+            </tr>
+            `
+          })
+          results.innerHTML = rowTemplate
+        })
+    }
+
+    document.getElementById('searchForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const query = document.getElementById('searchInput').value;
+      const obj = {
+        action: 'search',
+        query: query
+      }
+      fetch('../../includes/Roles.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(obj)
+        })
+        .then(response => response.json())
+        .then(json => {
+          let rowTemplate = ''
+          json.forEach(row => {
+            rowTemplate += `
+            <tr>
+              <td>${row.name}</td>
+              <td>${row.active == 1 ? "Activo" : "Inactivo"}</td>
+              <td>
+                <button type="button" class="btn btn-warning btnEdit" data-id="${row.id}">Editar</button>
+                <button type="button" class="btn btn-danger btnDelete" data-id="${row.id}">Eliminar</button>
+              </td>
+            </tr>
+            `
+          })
+          results.innerHTML = rowTemplate
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+    document.getElementById('filterMenu').addEventListener('click', (e) => {
+      e.preventDefault();
+      const status = e.target.getAttribute('data-status');
+      const obj = {
+        action: 'filter',
+        status: status
+      }
+      fetch('../../includes/Roles.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(obj)
+        })
+        .then(response => response.json())
+        .then(json => {
+          let rowTemplate = ''
+          json.forEach(row => {
+            rowTemplate += `
+            <tr>
+              <td>${row.name}</td>
+              <td>${row.active == 1 ? "Activo" : "Inactivo"}</td>
+              <td>
+                <button type="button" class="btn btn-warning btnEdit" data-id="${row.id}">Editar</button>
+                <button type="button" class="btn btn-danger btnDelete" data-id="${row.id}">Eliminar</button>
+              </td>
+            </tr>
+            `
+          })
+          results.innerHTML = rowTemplate
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+    getAllData()
+
+    results.addEventListener('click', e => {
+      e.preventDefault()
+      if (e.target.classList.contains('btnEdit')) {
+        editData(e)
+      }
+      if (e.target.classList.contains('btnDelete')) {
+        deleteData(e)
+      }
+    })
+
   </script>
 </body>
 
 </html>
+

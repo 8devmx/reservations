@@ -8,7 +8,6 @@ const email = document.querySelector('#email')
 const phone = document.querySelector('#phone')
 const rol = document.querySelector('#rol')
 const status = document.querySelector('#status')
-const btnClose = document.querySelector('#btnClose');
 
 
 viewForm.classList.add('d-none')
@@ -30,11 +29,6 @@ btnNew.addEventListener('click', (e) => {
   clearForm()
   showForm()
 })
-btnClose.addEventListener('click', (e) => { 
-  e.preventDefault();
-  clearForm();
-  showData();
-});
 
 btnClose.addEventListener('click', (e) => {
   e.preventDefault()
