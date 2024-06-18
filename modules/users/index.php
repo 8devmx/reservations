@@ -21,12 +21,12 @@
             <div class="btn-group me-2" role="group">
               <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="position: relative;right: 10px;">Filtro</button>
               <ul class="dropdown-menu" id="filterMenu">
-                <li><a class="dropdown-item" data-role="all">Todos</a></li>
-                <li><a class="dropdown-item" data-role="1">Usuario</a></li>
-                <li><a class="dropdown-item" data-role="2">Administrador</a></li>
+                <li><a class="dropdown-item" data-rol="all">Todos</a></li>
+                <li><a class="dropdown-item" data-rol="1">Usuario</a></li>
+                <li><a class="dropdown-item" data-rol="2">Administrador</a></li>
               </ul>
             </div>
-            <input type="text" id="searchInput" class="form-control" placeholder="Buscar..." style="position: relative; left: -10px;">
+            <input type="text" id="searchInput" class="form-control" placeholder="Buscar" style="position: relative; left: -10px;">
             <button class="btn btn-warning me-2" id="btnNew">+Nuevo</button>
           </div>
         </div>
@@ -130,8 +130,8 @@
           }
           getAllData()
         })
-        .catch(error => console.error('Error:', error));
     })
+
     const deleteData = e => {
       e.preventDefault();
       const id = e.target.getAttribute('data-id');
@@ -215,13 +215,12 @@
           results.innerHTML = rowTemplate
         })
     }
-
     document.getElementById('filterMenu').addEventListener('click', (e) => {
       e.preventDefault();
-      const role = e.target.getAttribute('data-role');
+      const rol = e.target.getAttribute('data-rol');
       const obj = {
         action: 'filter',
-        role: role
+        rol: rol
       };
       fetch('../../includes/Users.php', {
           method: 'POST',
@@ -248,12 +247,11 @@
           </td>
         </tr>
       `;
+
           });
           results.innerHTML = rowTemplate;
         })
-        .catch(error => console.error('Error:', error));
     });
-
     getAllData()
 
     results.addEventListener('click', e => {

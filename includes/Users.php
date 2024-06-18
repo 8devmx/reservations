@@ -21,7 +21,7 @@ if ($post) {
       $users->updateData($post);
       break;
     case 'filter':
-      $users->filterData($post['role']);
+      $users->filterData($post['rol']);
       break;
   }
 }
@@ -31,22 +31,16 @@ class User
   public function getAllData($query = '')
   {
     global $mysqli;
-    $sql = "SELECT users.id, users.name as name, users.email, users.phone, users.active, roles.name as rol FROM users LEFT JOIN roles on users.rol_id = roles.id";
-    if ($query !== '') {
-      $sql .= " WHERE users.name LIKE ? OR users.email LIKE ? OR users.phone LIKE ?";
-      $stmt = $mysqli->prepare($sql);
-      $search = "%$query%";
-      $stmt->bind_param("sss", $search, $search, $search);
-    } else {
-      $stmt = $mysqli->prepare($sql);
+    $searchQuery = '';
+    if (!empty($query)) {
+      $searchQuery = "WHERE users.name LIKE '%$query%'";
     }
-    $stmt->execute();
-    $result = $stmt->get_result();
+    $query = "SELECT users.id, users.name as name, users.email, users.phone, users.active, roles.name as rol FROM users LEFT JOIN roles on users.rol_id = roles.id $searchQuery";
     $data = [];
+    $result = $mysqli->query($query);
     while ($row = $result->fetch_object()) {
       $data[] = $row;
     }
-    $stmt->close();
     echo json_encode($data);
   }
 
@@ -58,7 +52,6 @@ class User
     $result = $mysqli->query($query);
     echo json_encode($result->fetch_object());
   }
-
   public function updateData($post)
   {
     $name = $post['name'];
@@ -127,25 +120,19 @@ class User
     }
     echo json_encode($response);
   }
-  public function filterData($role)
-{
-  global $mysqli;
-  if ($role === 'all') {
-    $query = "SELECT * FROM users";
-    $stmt = $mysqli->prepare($query);
-  } else {
-    $query = "SELECT * FROM users WHERE rol_id = ?";
-    $stmt = $mysqli->prepare($query);
-    $stmt->bind_param("i", $role);
-  }
-  $stmt->execute();
-  $result = $stmt->get_result();
-  $data = [];
-  while ($row = $result->fetch_object()) {
-    $data[] = $row;
-  }
-  $stmt->close();
-  echo json_encode($data);
-}
+  public function filterData($rol)
+    {
+        global $mysqli;
+        $query = "SELECT users.id, users.name as name, users.email, users.phone, users.active, roles.name as rol FROM users LEFT JOIN roles on users.rol_id = roles.id";
+        if ($rol !== 'all') {
+            $query .= " WHERE users.rol_id = '$rol'";
+        }
+        $data = [];
+        $result = $mysqli->query($query);
+        while ($row = $result->fetch_object()) {
+            $data[] = $row;
+        }
+        echo json_encode($data);
+    }
 }
 ?>
