@@ -27,7 +27,7 @@
                 <li><a class="dropdown-item" data-status="0">Inactivo</a></li>
               </ul>
             </div>
-            <input type="text" id="searchInput" class="form-control" placeholder="Buscar" style="position: relative; left: -10px;">
+            <input type="search" id="searchInput" class="form-control me-2" placeholder="Buscar..." aria-label="Buscar">
             <button class="btn btn-warning me-2" id="btnNew">+Nuevo</button>
           </div>
         </div>
@@ -67,7 +67,13 @@
           </div>
           <div class="form-group col-sm-6">
             <label for="status">Status</label>
-            <select name="status" id="status" class="form-control">
+            <select name="cliente" id="cliente" class="form-select">
+              <option value="" disabled selected>Seleccionar cliente...</option>
+              <option value="0">Inactivo</option>
+              <option value="1">Activo</option>
+            </select>
+            <select name="cliente" id="cliente" class="form-select">
+              <option value="" disabled selected>Selecionar usuario...</option>
               <option value="0">Inactivo</option>
               <option value="1">Activo</option>
             </select>

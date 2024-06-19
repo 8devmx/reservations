@@ -7,7 +7,6 @@
   include_once '../../includes/head.php';
   require_once '../../includes/events.php';
   $events = new Events();
-  $clients = $events->getClients();
   ?>
 </head>
 
@@ -18,7 +17,7 @@
       <?php include_once '../../includes/sidebar.php'; ?>
       <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 animate__animated animate__faster" id="viewData">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-          <h1 class="h2">Events</h1>
+          <h1 class="h2">Reservaciones</h1>
           <div class="ml-md-auto d-flex align-items-center">
               <form class="d-flex custom-margin me-3" id="searchForm">
               <div class="btn-group me-1">
