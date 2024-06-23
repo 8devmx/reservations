@@ -6,7 +6,7 @@ if ($post) {
   $users = new User();
   switch ($post['action']) {
     case 'showData':
-      $users->getAllData($post['query'] ?? '');
+      $users->getAllData();
       break;
     case 'insert':
       $users->insertData($post);
@@ -20,22 +20,15 @@ if ($post) {
     case 'update':
       $users->updateData($post);
       break;
-    case 'filter':
-      $users->filterData($post['rol']);
-      break;
   }
 }
 
 class User
 {
-  public function getAllData($query = '')
+  public function getAllData()
   {
     global $mysqli;
-    $searchQuery = '';
-    if (!empty($query)) {
-      $searchQuery = "WHERE users.name LIKE '%$query%'";
-    }
-    $query = "SELECT users.id, users.name as name, users.email, users.phone, users.active, roles.name as rol FROM users LEFT JOIN roles on users.rol_id = roles.id $searchQuery";
+    $query = "SELECT users.id, users.name as name, users.email, users.phone, users.active, roles.name as rol FROM users LEFT JOIN roles on users.rol_id = roles.id";
     $data = [];
     $result = $mysqli->query($query);
     while ($row = $result->fetch_object()) {
@@ -48,10 +41,11 @@ class User
   {
     $id = $post['id'];
     global $mysqli;
-    $query = "SELECT * FROM users where id = $id";
+    $query = "SELECT * FROM users WHERE id = $id";
     $result = $mysqli->query($query);
     echo json_encode($result->fetch_object());
   }
+
   public function updateData($post)
   {
     $name = $post['name'];
@@ -61,7 +55,7 @@ class User
     $status = $post['status'];
     $id = $post['id'];
 
-    $query = "update users set name = '$name', email = '$email', phone = '$phone', rol_id = '$rol', active = '$status' where id = $id";
+    $query = "UPDATE users SET name = '$name', email = '$email', phone = '$phone', rol_id = '$rol', active = '$status' WHERE id = $id";
 
     global $mysqli;
     $mysqli->query($query);
@@ -87,7 +81,7 @@ class User
     $phone = $data['phone'];
     $rol = $data['rol'];
     $status = $data['status'];
-    $query = "INSERT INTO users (name, email, phone, rol_id, active) VALUES ('$nombre', '$email', '$phone', '$rol', '$status')";
+    $query = "INSERT IGNORE INTO users (name, email, phone, rol_id, active) VALUES ('$nombre', '$email', '$phone', '$rol', '$status')";
     $mysqli->query($query);
 
     $response = [
@@ -98,6 +92,11 @@ class User
       $response = [
         "message" => "Se registró correctamente el usuario de " . $nombre,
         "status" => 2
+      ];
+    } else {
+      $response = [
+        "message" => "El correo electrónico o teléfono ya está registrado, no se ha insertado un nuevo registro",
+        "status" => 1
       ];
     }
     echo json_encode($response);
@@ -120,19 +119,5 @@ class User
     }
     echo json_encode($response);
   }
-  public function filterData($rol)
-    {
-        global $mysqli;
-        $query = "SELECT users.id, users.name as name, users.email, users.phone, users.active, roles.name as rol FROM users LEFT JOIN roles on users.rol_id = roles.id";
-        if ($rol !== 'all') {
-            $query .= " WHERE users.rol_id = '$rol'";
-        }
-        $data = [];
-        $result = $mysqli->query($query);
-        while ($row = $result->fetch_object()) {
-            $data[] = $row;
-        }
-        echo json_encode($data);
-    }
 }
 ?>
