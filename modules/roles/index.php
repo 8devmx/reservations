@@ -75,6 +75,8 @@
     const clearForm = () => {
       name.value = ''
       status.value = 1
+      btnSave.removeAttribute('data-id');
+      btnSave.textContent = 'Registrar'
     }
 
     btnSave.addEventListener('click', (e) => {
