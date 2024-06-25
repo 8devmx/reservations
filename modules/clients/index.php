@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+<link rel="stylesheet" href="../../css/styles.css">
   <?php
   include_once '../../includes/head.php';
   require_once '../../includes/Clients.php';
