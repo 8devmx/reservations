@@ -24,12 +24,12 @@
               <div class="btn-group me-1">
                 <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Selecciona un cliente</button>
                 <ul class="dropdown-menu" id="clientUL">
+                <li><a class="dropdown-item" href="#" data-client-id="all">Todos</a></li>
                     <?php foreach ($clients as $client): ?><li><a class="dropdown-item" href="#" data-client-id="<?php echo $client->id; ?>"><?php echo $client->name; ?></a></li>
                     <?php endforeach; ?> 
                 </ul>
             </div>
-                <input type="search" class="form-control me-1" placeholder="Buscar.." id="searchInput">
-                <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+                <input type="text" class="form-control me-1" placeholder="Buscar.." id="searchInput">
               </form>
             <button class="btn btn-warning" id="btnNew" value="Buscar">+ Nuevo</button>
           </div>
@@ -81,11 +81,37 @@
           </div>
           <div class="form-group">
             <label for="client">Cliente:</label>
-            <input type="text" class="form-control" id="client" name="client" placeholder="Escribe tu ID de cliente">
+            <select name="client" id="client" class="form-control">
+            <option value="" selected>Seleccione una Opcion</option>
+              <?php 
+              require_once "../../includes/Clients.php";
+              $clientes = new Clients();
+              $data = $clientes->getClientsForEvents();
+              foreach ($data as $key => $value) {
+              ?> 
+              <option value="<?php echo $value['id']; ?>"><?php echo $value['name']; ?></option>
+              <?php
+              }
+              print_r($data);
+              ?>
+            </select>
           </div>
           <div class="form-group">
             <label for="user">Usuarios:</label>
-            <input type="text" class="form-control" id="user" name="user" placeholder="Usuario ID">
+            <select class="form-control" name="user" id="user">
+            <option value="" selected>Seleccione una Opcion</option>
+              <?php 
+              require_once "../../includes/Users.php";
+              $usuario = new User();
+              $data = $usuario->getUserForEvents();
+              foreach ($data as $key => $value) {
+              ?> 
+              <option value="<?php echo $value['id']; ?>"><?php echo $value['name']; ?></option>
+              <?php
+              }
+              print_r($data);
+              ?>
+            </select>
           </div>
           <div class="form-group">
             <label for="map">Mapa:</label>
@@ -94,8 +120,8 @@
           <div class="form-group">
             <label for="status">Status</label>
             <select name="status" id="status" class="form-control">
-              <option value="0">Inactivo</option>
               <option value="1">Activo</option>
+              <option value="0">Inactivo</option>
             </select>
           </div>
           <div class="form-group mt-3">
@@ -106,10 +132,10 @@
     </div>
   </div>
   <script src="../../js/generalEvents.js"></script>
+
   <script>
     const clearForm = () => {
       title.value = ''
-      status.value = 0
       description.value = ''
       start_date.value = ''
       start_hout.value = ''
@@ -118,15 +144,17 @@
       client.value = ''
       user.value = ''
       map.value = ''
-
+      status.value = 0
+      btnSave.removeAttribute('data-id');
+      btnSave.textContent = 'Registrar'
     }
+    
     btnSave.addEventListener('click', (e) => {
       e.preventDefault()
 
       let obj = {
         action: 'insert',
         title: title.value,
-        status: status.value,
         description: description.value,
         start_date: start_date.value,
         start_hout: start_hout.value,
@@ -134,7 +162,8 @@
         end_hour: end_hour.value,
         client: client.value,
         user: user.value,
-        map: map.value
+        map: map.value,
+        status: status.value
       }
 
       if (btnSave.hasAttribute('data-id')) {
@@ -157,6 +186,7 @@
             showData();
             btnSave.removeAttribute('data-id');
             btnSave.textContent = 'Registrar'
+            location.reload()
           }
           getAllData()
         })
@@ -207,8 +237,8 @@
             start_hout.value = json.start_hout
             end_date.value = json.end_date
             end_hour.value = json.end_hour
-            client.value = json.client
-            user.value = json.user
+            client.value = json.client_id
+            user.value = json.user_id
             map.value = json.map
             status.value = json.active
             btnSave.textContent = 'Editar'
@@ -216,9 +246,10 @@
           })
       }
 
-      const getAllData = () => {
+      const getAllData = (query = '') => {
       const obj = {
         action: 'showData',
+        query: query
       }
       fetch('../../includes/events.php', {
           method: 'POST',
@@ -248,47 +279,14 @@
           results.innerHTML = rowTemplate
         })
     }
-    
-    document.getElementById('searchForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const query = document.getElementById('searchInput').value;
-      const obj = {
-        action: 'search',
-        query: query
-      }
-      fetch('../../includes/events.php', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(obj)
-        })
-        .then(response => response.json())
-        .then(json => {
-          let rowTemplate = ''
-          json.forEach(row => {
-            rowTemplate += `
-            <tr>
-               <td>${row.title}</td>
-              <td>${row.client}</td>
-              <td>${row.start_date + " " + row.start_hout}</td>
-              <td>${row.end_date + " " + row.end_hour}</td>
-              <td>${row.active == 1 ? "Activo" : "Inactivo"}</td>
-              <td>
-                <button type="button" class="btn btn-warning btnEdit" data-id="${row.id}">Editar</button>
-                <button type="button" class="btn btn-danger btnDelete" data-id="${row.id}">Eliminar</button>
-            </tr>
-            `
-          })
-          results.innerHTML = rowTemplate
-        })
-        .catch(error => console.error('Error:', error));
-    });
 
     document.getElementById('clientUL').addEventListener('click', (e) => {
     e.preventDefault();
     if (e.target.classList.contains('dropdown-item')) {
         const clientId = e.target.getAttribute('data-client-id');
+        if (clientId === 'all') {
+            getAllData();
+        } else {
   const obj = {
     action: 'filtroData',
     client_id: clientId
@@ -322,7 +320,8 @@
     })
     .catch(error => console.error('Error:', error));
   }
-});
+}
+})
 
     getAllData()
 
@@ -335,6 +334,23 @@
           deleteData(e)
         }
       })
+      const searchInput = document.querySelector('#searchInput');
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.trim();
+      getAllData(query);
+    });
+  
+    // Limpia el buscador
+    const clearSearch = () => {
+    searchInput.value = '';
+  }
+
+  btnClose.addEventListener('click', (e) => {
+    e.preventDefault();
+    clearForm();
+    clearSearch();
+    showData();
+  });
   </script>
 </body>
 
