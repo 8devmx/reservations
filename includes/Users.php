@@ -52,6 +52,7 @@ class User
     $result = $mysqli->query($query);
     echo json_encode($result->fetch_object());
   }
+
   public function updateData($post)
   {
     $name = $post['name'];
@@ -61,7 +62,16 @@ class User
     $status = $post['status'];
     $id = $post['id'];
 
-    $query = "update users set name = '$name', email = '$email', phone = '$phone', rol_id = '$rol', active = '$status' where id = $id";
+    if (empty($name) || empty($email) || empty($phone)) {
+      $response = [
+          "message" => "Todos los campos son obligatorios.",
+          "status" => 1
+      ];
+      echo json_encode($response);
+      return;
+  }
+
+    $query = "UPDATE users set name = '$name', email = '$email', phone = '$phone', rol_id = '$rol', active = '$status' where id = $id";
 
     global $mysqli;
     $mysqli->query($query);
@@ -87,6 +97,16 @@ class User
     $phone = $data['phone'];
     $rol = $data['rol'];
     $status = $data['status'];
+
+    if (empty($nombre) || empty($email) || empty($phone)) {
+      $response = [
+          "message" => "Todos los campos son obligatorios.",
+          "status" => 1
+      ];
+      echo json_encode($response);
+      return;
+  }
+
     $query = "INSERT INTO users (name, email, phone, rol_id, active) VALUES ('$nombre', '$email', '$phone', '$rol', '$status')";
     $mysqli->query($query);
 

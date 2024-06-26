@@ -123,6 +123,11 @@
     btnSave.addEventListener('click', (e) => {
       e.preventDefault()
 
+      if (!title.value.trim() || !description.value.trim() || !start_date.value.trim() || !start_hout.value.trim() || !end_date.value.trim() || !end_hour.value.trim() || !map.value.trim()) {
+        alert('Todos los campos son obligatorios.');
+        return;
+      }
+
       let obj = {
         action: 'insert',
         title: title.value,

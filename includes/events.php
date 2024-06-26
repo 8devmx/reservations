@@ -85,6 +85,15 @@ class Events
     $status = $post['status'];
     $id = $post['id'];
 
+    if (empty($title) || empty($description) || empty($start_date) || empty($start_hout) || empty($end_date) || empty($end_hour) || empty($map)) {
+      $response = [
+          "message" => "Todos los campos son obligatorios.",
+          "status" => 1
+      ];
+      echo json_encode($response);
+      return;
+  }
+
     $query = "UPDATE events SET title = '$title', description = '$description', start_date = '$start_date', start_hout = '$start_hout', end_date = '$end_date', end_hour = '$end_hour',  client_id = '$client', user_id = '$user', map = '$map', active = '$status' WHERE id = $id";
 
     global $mysqli;
@@ -129,6 +138,16 @@ class Events
     $Cliente = $data['client_id'];
     $Mapa = $data['map'];
     $status = $data['status'];
+
+    if (empty($Titulo) || empty($Descripcion) || empty($Fecha_de_Inicio) || empty($Hora_de_Inicio) || empty($Fecha_de_Fin) || empty($Hora_de_Fin) || empty($Mapa)) {
+      $response = [
+          "message" => "Todos los campos son obligatorios.",
+          "status" => 1
+      ];
+      echo json_encode($response);
+      return;
+  }
+
     $query =  "INSERT INTO events (title, description, start_date, start_hout, end_date, end_hour, client_id, user_id, map, active) VALUES ('$Titulo', '$Descripcion', '$Fecha_de_Inicio', '$Hora_de_Inicio','$Fecha_de_Fin','$Hora_de_Fin','$Cliente','$user_id','$Mapa','$status')";
     $mysqli->query($query);
     $response = [

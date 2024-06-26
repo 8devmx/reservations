@@ -60,6 +60,15 @@ class Clients
         $status = $post['status'];
         $id = $post['id'];
 
+        if (empty($name) || empty($email) || empty($phone)) {
+            $response = [
+                "message" => "Todos los campos son obligatorios.",
+                "status" => 1
+            ];
+            echo json_encode($response);
+            return;
+        }
+
         $query = "UPDATE clients SET name = '$name', email = '$email', phone = '$phone', active = '$status' WHERE id = $id";
         global $mysqli;
         $mysqli->query($query);
@@ -84,6 +93,16 @@ class Clients
         $email = $data['email'];
         $phone = $data['phone'];
         $status = $data['status'];
+
+        if (empty($name) || empty($email) || empty($phone)) {
+            $response = [
+                "message" => "Todos los campos son obligatorios.",
+                "status" => 1
+            ];
+            echo json_encode($response);
+            return;
+        }
+
         $query = "INSERT INTO clients (name, email, phone, active) VALUES ('$name', '$email', '$phone', '$status')";
         $mysqli->query($query);
 

@@ -64,6 +64,15 @@ class Roles
     $status = $post['status'];
     $id = $post['id'];
 
+    if (empty($name)) {
+      $response = [
+          "message" => "Todos los campos son obligatorios.",
+          "status" => 1
+      ];
+      echo json_encode($response);
+      return;
+  }
+
     $query = "UPDATE roles SET name = '$name', active = '$status' WHERE id = $id";
     $this->mysqli->query($query);
 
@@ -84,6 +93,15 @@ class Roles
   {
     $nombre = $data['name'];
     $status = $data['status'];
+
+    if (empty($nombre)) {
+      $response = [
+          "message" => "Todos los campos son obligatorios.",
+          "status" => 1
+      ];
+      echo json_encode($response);
+      return;
+  }
 
     $query = "INSERT INTO roles (name, active) VALUES ('$nombre', '$status')";
     $this->mysqli->query($query);

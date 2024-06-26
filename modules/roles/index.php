@@ -80,6 +80,12 @@
     btnSave.addEventListener('click', (e) => {
       e.preventDefault()
 
+      if (!name.value.trim()) {
+        alert('Todos los campos son obligatorios.');
+        return;
+      }
+
+
       let obj = {
         action: 'insert',
         name: name.value,

@@ -90,6 +90,11 @@
 
     btnSave.addEventListener('click', (e) => {
       e.preventDefault();
+      
+      if (!name.value.trim() || !email.value.trim() || !phone.value.trim()) {
+        alert('Todos los campos son obligatorios.');
+        return;
+      }
 
       let obj = {
         action: 'insert',
