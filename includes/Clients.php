@@ -84,7 +84,7 @@ class Clients
         $email = $data['email'];
         $phone = $data['phone'];
         $status = $data['status'];
-        $query = "INSERT INTO clients (name, email, phone, active) VALUES ('$name', '$email', '$phone', '$status')";
+        $query = "INSERT IGNORE INTO clients (name, email, phone, active) VALUES ('$name', '$email', '$phone', '$status')";
         $mysqli->query($query);
 
         $response = [
@@ -96,7 +96,12 @@ class Clients
                 "message" => "Se registró correctamente el usuario de " . $name,
                 "status" => 2
             ];
-        }
+        } else {
+            $response = [
+              "message" => "El correo electrónico o teléfono ya está registrado, no se ha insertado un nuevo registro",
+              "status" => 1
+            ];
+          }
         echo json_encode($response);
     }
 

@@ -4,16 +4,16 @@
       <a href="#">Dashboard</a>
     </li>
     <li>
-      <a href="http://localhost/modelos-de-bd-primer-parcial/modules/users/index.php">Usuarios</a>
+      <a href="http://localhost/reservations/modules/users/index.php">Usuarios</a>
     </li>
     <li>
-      <a href="http://localhost/modelos-de-bd-primer-parcial/modules/clients/index.php">Clientes</a>
+      <a href="http://localhost/reservations/modules/clients/index.php">Clientes</a>
     </li>
     <li>
-      <a href="http://localhost/modelos-de-bd-primer-parcial/modules/roles/index.php">Roles</a>
+      <a href="http://localhost/reservations/modules/roles/index.php">Roles</a>
     </li>
     <li>
-      <a href="http://localhost/modelos-de-bd-primer-parcial/modules/events/index.php">Reservaciones</a>
+      <a href="http://localhost/reservations/modules/events/index.php">Reservaciones</a>
     </li>
   </ul>
 </div>

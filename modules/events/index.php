@@ -118,7 +118,8 @@
       client.value = ''
       user.value = ''
       map.value = ''
-
+      btnSave.removeAttribute('data-id');
+      btnSave.textContent = 'Registrar'
     }
     btnSave.addEventListener('click', (e) => {
       e.preventDefault()
