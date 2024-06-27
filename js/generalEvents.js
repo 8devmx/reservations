@@ -40,3 +40,15 @@ btnClose.addEventListener('click', (e) => {
   clearForm()
   showData()
 })
+
+document.addEventListener("DOMContentLoaded", function() {
+  const sidebar = document.querySelector('.sidebar');
+
+  sidebar.addEventListener('mouseenter', function() {
+    sidebar.classList.remove('collapsed');
+  });
+
+  sidebar.addEventListener('mouseleave', function() {
+    sidebar.classList.add('collapsed');
+  });
+});

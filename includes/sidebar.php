@@ -33,19 +33,7 @@
   </ul>
 </div>
 
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const sidebar = document.querySelector('.sidebar');
 
-    sidebar.addEventListener('mouseenter', function() {
-      sidebar.classList.remove('collapsed');
-    });
-
-    sidebar.addEventListener('mouseleave', function() {
-      sidebar.classList.add('collapsed');
-    });
-  });
-</script>
 
 
 
