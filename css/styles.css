@@ -36,11 +36,11 @@
     justify-content: center;
 }
 
-.sidebar.collapsed .nav-link p {
+.sidebar.collapsed .nav-link span {
     display: none;
 }
 
-.sidebar .nav-link p {
+.sidebar .nav-link span {
     margin: 0;
     line-height: 59px;
     transition: opacity 0.3s;
@@ -49,3 +49,4 @@
 .sidebar.collapsed .nav-link .icon {
     margin-right: 0;
 }
+
