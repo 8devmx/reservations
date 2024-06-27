@@ -42,6 +42,14 @@ class Clients
         }
         echo json_encode($data);
     }
+    public function getClientsForEvents()
+    {
+        global $mysqli;
+        $sql = "SELECT clients.id, clients.name, clients.email, clients.phone, clients.active FROM clients";
+        $data = [];
+        $result = $mysqli->query($sql);
+        return $result;
+    }
 
     public function getOneData($post)
     {

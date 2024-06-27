@@ -36,6 +36,14 @@ class User
     }
     echo json_encode($data);
   }
+  public function getUserForEvents()
+  {
+    global $mysqli;
+    $sql = "SELECT users.id, users.name, users.email, users.password, users.phone, users.rol_id, users.active FROM users";
+    $data = [];
+    $result = $mysqli->query($sql);
+    return $result;
+  }
 
   public function getOneData($post)
   {
