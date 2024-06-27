@@ -93,7 +93,9 @@
       phone.value = ''
       rol.value = 1
       status.value = 0
-    }
+      btnSave.textContent = 'Registrar'
+      btnSave.removeAttribute('data-id');
+    } 
 
     btnSave.addEventListener('click', (e) => {
       e.preventDefault()

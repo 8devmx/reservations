@@ -86,6 +86,8 @@
       email.value = '';
       phone.value = '';
       status.value = '0';
+      btnSave.removeAttribute('data-id');
+      btnSave.textContent = 'Registrar'
     }
 
     btnSave.addEventListener('click', (e) => {

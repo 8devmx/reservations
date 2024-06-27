@@ -101,8 +101,8 @@ class Events
     $Usuario = $data['user'];
     $Mapa = $data['map'];
     $status = $data['status'];
-    
-    $query =  "INSERT INTO events (title, description, start_date, start_hout, end_date, end_hour, client_id, user_id, map, active) VALUES ('$Titulo', '$Descripcion', '$Fecha_de_Inicio', '$Hora_de_Inicio','$Fecha_de_Fin','$Hora_de_Fin','$Cliente','$Usuario','$Mapa','$status')";
+
+    $query =  "INSERT IGNORE INTO events (title, description, start_date, start_hout, end_date, end_hour, client_id, user_id, map, active) VALUES ('$Titulo', '$Descripcion', '$Fecha_de_Inicio', '$Hora_de_Inicio','$Fecha_de_Fin','$Hora_de_Fin','$Cliente','$Usuario','$Mapa','$status')";
     $mysqli->query($query);
     
     $response = [
@@ -113,6 +113,11 @@ class Events
       $response = [
         "message" => "Se registró correctamente el Evento de " . $Titulo,
         "status" => 2
+      ];
+    } else {
+      $response = [
+        "message" => "El cliente y el usaurio ya está registrado, no se ha insertado un nuevo registro",
+        "status" => 1
       ];
     }
     echo json_encode($response);
