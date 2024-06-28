@@ -1,44 +1,40 @@
 @import '../node_modules/animate.css/animate.min.css';
-.sidebar {
+
+.new-sidebar {
     width: 210px;
     overflow: hidden;
     transition: width 0.3s;
 }
-.sidebar.collapsed {
+
+.new-sidebar.collapsed {
     width: 50px;
 }
-.sidebar .nav-link {
+
+.new-sidebar .nav-link {
     padding: 10px;
     transition: background-color 0.3s, color 0.3s;
     display: flex;
     align-items: center;
     white-space: nowrap;
 }
-.sidebar .nav-link:hover {
-    background-color: #495057; /* Color de fondo cuando se pasa el cursor */
+
+.new-sidebar .nav-link:hover {
+    background-color: #6c757d; /* Color de fondo cuando se pasa el cursor */
     color: #fff; /* Color del texto cuando se pasa el cursor */
 }
-.sidebar .nav-link.active {
-    background-color: #343a40; /* Color de fondo para el enlace activo */
+
+.new-sidebar .nav-link.active {
+    background-color: #495057; /* Color de fondo para el enlace activo */
     color: #fff; /* Color del texto para el enlace activo */
 }
-.sidebar .nav-link .icon {
+
+.new-sidebar .nav-link .icon {
     height: 59px;
     margin-right: 25px !important;
     display: flex;
     align-items: center;
     justify-content: center;
 }
-.sidebar.collapsed .nav-link span {
-    display: none;
-}
-.sidebar .nav-link span {
-    margin: 0;
-    line-height: 59px;
-    transition: opacity 0.3s;
-}
-.sidebar.collapsed .nav-link .icon {
-    margin-right: 0;
-}
+
 
 
