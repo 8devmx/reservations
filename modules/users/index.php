@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-
+<link rel="stylesheet" href="../../css/styles.css">
 <head>
   <?php
   include_once '../../includes/head.php';
