@@ -1,8 +1,7 @@
 <!doctype html>
 <html lang="en">
-
+<link rel="stylesheet" href="../../css/styles.css">
 <head>
-  <link rel="stylesheet" href="../../css/styles.css">
   <?php
   include_once '../../includes/head.php';
   require_once '../../includes/events.php';
