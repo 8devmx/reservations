@@ -102,8 +102,8 @@ class Clients
             echo json_encode($response);
             return;
         }
-
-        $query = "INSERT INTO clients (name, email, phone, active) VALUES ('$name', '$email', '$phone', '$status')";
+        
+        $query = "INSERT IGNORE INTO clients (name, email, phone, active) VALUES ('$name', '$email', '$phone', '$status')";
         $mysqli->query($query);
 
         $response = [
