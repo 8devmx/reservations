@@ -94,6 +94,7 @@ class Roles
     $nombre = $data['name'];
     $status = $data['status'];
 
+
     if (empty($nombre)) {
       $response = [
           "message" => "Todos los campos son obligatorios.",
@@ -102,8 +103,8 @@ class Roles
       echo json_encode($response);
       return;
   }
-
-    $query = "INSERT INTO roles (name, active) VALUES ('$nombre', '$status')";
+    
+    $query = "INSERT IGNORE INTO roles (name, active) VALUES ('$nombre', '$status')";
     $this->mysqli->query($query);
 
     $response = [
@@ -114,6 +115,11 @@ class Roles
       $response = [
         "message" => "Se registró correctamente el Rol de $nombre",
         "status" => 2
+      ];
+    } else {
+      $response = [
+        "message" => "El Rol ya está registrado, no se ha insertado un nuevo registro",
+        "status" => 1
       ];
     }
     echo json_encode($response);
