@@ -63,6 +63,15 @@ class User
     $status = $post['status'];
     $id = $post['id'];
 
+    if (empty($name) || empty($email) || empty($phone)) {
+      $response = [
+          "message" => "Todos los campos son obligatorios.",
+          "status" => 1
+      ];
+      echo json_encode($response);
+      return;
+  }
+    
     $query = "UPDATE users SET name = '$name', email = '$email', phone = '$phone', rol_id = '$rol', active = '$status' WHERE id = $id";
 
     global $mysqli;
@@ -89,6 +98,16 @@ class User
     $phone = $data['phone'];
     $rol = $data['rol'];
     $status = $data['status'];
+
+    if (empty($nombre) || empty($email) || empty($phone)) {
+      $response = [
+          "message" => "Todos los campos son obligatorios.",
+          "status" => 1
+      ];
+      echo json_encode($response);
+      return;
+  }
+
     $query = "INSERT IGNORE INTO users (name, email, phone, rol_id, active) VALUES ('$nombre', '$email', '$phone', '$rol', '$status')";
     $mysqli->query($query);
 
