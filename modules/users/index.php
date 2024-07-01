@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-
+<link rel="stylesheet" href="../../css/styles.css">
 <head>
   <?php
   include_once '../../includes/head.php';
@@ -93,7 +93,9 @@
       phone.value = ''
       rol.value = 1
       status.value = 0
-    }
+      btnSave.textContent = 'Registrar'
+      btnSave.removeAttribute('data-id');
+    } 
 
     btnSave.addEventListener('click', (e) => {
       e.preventDefault()

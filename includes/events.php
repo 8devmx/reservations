@@ -6,7 +6,7 @@ if ($post) {
   $events = new Events();
   switch ($post['action']) {
     case 'showData':
-      $events->getAllData();
+      $events->getAllData($post['query'] ?? '');
       break;
     case 'insert':
       $events = new Events();
@@ -24,9 +24,6 @@ if ($post) {
       $events = new Events();
       $events->updateData($post);
       break;
-    case 'search':
-      $events->searchData($post['query']);
-      break;
     case 'filtroData':
       $events->filtroData($post['client_id']);
       break;
@@ -34,39 +31,27 @@ if ($post) {
 }
 class Events
 {
-  public function getAllData()
+  public function getAllData($query = '')
   {
     global $mysqli;
-    $query = "SELECT 
-            events.id, 
-            events.title as title, 
-            events.description, 
-            events.start_date, 
-            events.start_hout, 
-            events.end_date, 
-            events.end_hour, 
-            events.map, 
-            events.client_id, 
-            events.user_id, 
-            events.active, 
-            clients.name as client,
-            users.name as user
-        FROM events 
-        LEFT JOIN clients on events.client_id = clients.id
-        LEFT JOIN users on events.user_id = users.id";
-        $data = [];
-        $result = $mysqli->query($query);
-        while ($row = $result->fetch_object()) {
-          $data[] = $row;
-        }
-        echo json_encode($data);
+    $searchQuery = '';
+    if (!empty($query)) {
+      $searchQuery = "WHERE events.title LIKE '%$query%'";
+    }
+    $query = "SELECT events.id, events.title as title, events.description, events.start_date, events.start_hout, events.end_date, events.end_hour, events.map, events.client_id, events.user_id, events.active, clients.name as client, users.name as user FROM events LEFT JOIN clients on events.client_id = clients.id LEFT JOIN users on events.user_id = users.id $searchQuery";
+    $data = [];
+    $result = $mysqli->query($query);
+    while ($row = $result->fetch_object()) {
+      $data[] = $row;
+    }
+    echo json_encode($data);
   }
 
   public function getOneData($post)
   {
     $id = $post['id'];
     global $mysqli;
-    $query = "SELECT * FROM events where id = $id";
+    $query = "SELECT * FROM events WHERE id = $id";
     $result = $mysqli->query($query);
     echo json_encode($result->fetch_object());
   }
@@ -105,7 +90,7 @@ class Events
     ];
     if ($mysqli->affected_rows > 0) {
       $response = [
-        "message" => "Se editó correctamente el usuario de " . $title,
+        "message" => "Se editó correctamente el Evento de " . $title,
         "status" => 2
       ];
     }
@@ -115,27 +100,14 @@ class Events
   public function insertData($data)
   {
     global $mysqli;
-    // Verificar si el user_id existe en la tabla de usuarios
-    $user_id = $data['user_id'];
-    $user_check_query = "SELECT id FROM users WHERE id='$user_id' LIMIT 1";
-    $result = $mysqli->query($user_check_query);
-    if ($result->num_rows == 0) {
-      // El user_id no existe en la tabla de usuarios
-      $response = [
-        "message" => "El ID de usuario proporcionado no es válido",
-        "status" => 0
-      ];
-      echo json_encode($response);
-      return;
-    }
-
     $Titulo = $data['title'];
     $Descripcion = $data['description'];
     $Fecha_de_Inicio = $data['start_date'];
     $Hora_de_Inicio = $data['start_hout'];
     $Fecha_de_Fin = $data['end_date'];
     $Hora_de_Fin = $data['end_hour'];
-    $Cliente = $data['client_id'];
+    $Cliente = $data['client'];
+    $Usuario = $data['user'];
     $Mapa = $data['map'];
     $status = $data['status'];
 
@@ -147,16 +119,22 @@ class Events
       echo json_encode($response);
       return;
   }
-
-    $query =  "INSERT INTO events (title, description, start_date, start_hout, end_date, end_hour, client_id, user_id, map, active) VALUES ('$Titulo', '$Descripcion', '$Fecha_de_Inicio', '$Hora_de_Inicio','$Fecha_de_Fin','$Hora_de_Fin','$Cliente','$user_id','$Mapa','$status')";
+    
+    $query =  "INSERT IGNORE INTO events (title, description, start_date, start_hout, end_date, end_hour, client_id, user_id, map, active) VALUES ('$Titulo', '$Descripcion', '$Fecha_de_Inicio', '$Hora_de_Inicio','$Fecha_de_Fin','$Hora_de_Fin','$Cliente','$Usuario','$Mapa','$status')";
     $mysqli->query($query);
+    
     $response = [
       "message" => "No se pudo almacenar el registro en la base de datos",
-      "status" => 0
+      "status" => 1
     ];
     if ($mysqli->insert_id != 0) {
       $response = [
         "message" => "Se registró correctamente el Evento de " . $Titulo,
+        "status" => 2
+      ];
+    } else {
+      $response = [
+        "message" => "El cliente y el usaurio ya está registrado, no se ha insertado un nuevo registro",
         "status" => 1
       ];
     }
@@ -182,39 +160,6 @@ class Events
     echo json_encode($response);
   }
 
-public function searchData($query)
-  {
-    global $mysqli;
-    $searchQuery = "%" . $mysqli->real_escape_string($query) . "%";
-    $query = "SELECT 
-            events.id, 
-            events.title as title, 
-            events.description, 
-            events.start_date, 
-            events.start_hout, 
-            events.end_date, 
-            events.end_hour, 
-            events.map, 
-            events.client_id, 
-            events.user_id, 
-            events.active, 
-            clients.name as client,
-            users.name as user
-        FROM events 
-        LEFT JOIN clients on events.client_id = clients.id
-        LEFT JOIN users on events.user_id = users.id WHERE title LIKE ?";
-    $stmt = $mysqli->prepare($query);
-    $stmt->bind_param("s", $searchQuery);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $data = [];
-    while ($row = $result->fetch_object()) {
-      $data[] = $row;
-    }
-    $stmt->close();
-    echo json_encode($data);
-  }
-
   public function filtroData($client_id)
 {
   global $mysqli;
@@ -235,18 +180,14 @@ public function searchData($query)
       FROM events 
       LEFT JOIN clients on events.client_id = clients.id
       LEFT JOIN users on events.user_id = users.id
-      WHERE events.client_id = ?";
-  $stmt = $mysqli->prepare($query);
-  $stmt->bind_param("i", $client_id);
-  $stmt->execute();
-  $result = $stmt->get_result();
-  $data = [];
-  while ($row = $result->fetch_object()) {
-    $data[] = $row;
-  }
-  $stmt->close();
-  echo json_encode($data);
-}
+      WHERE events.client_id = '$client_id'";
+       $result = $mysqli->query($query);
+       $data = [];
+       while ($row = $result->fetch_object()) {
+        $data[] = $row;
+      }
+      echo json_encode($data);
+    }
 
   public function getClients()
 {

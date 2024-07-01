@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-
+<link rel="stylesheet" href="../../css/styles.css">
 <head>
   <?php
   include_once '../../includes/head.php';
@@ -75,6 +75,8 @@
     const clearForm = () => {
       name.value = ''
       status.value = 1
+      btnSave.removeAttribute('data-id');
+      btnSave.textContent = 'Registrar'
     }
 
     btnSave.addEventListener('click', (e) => {

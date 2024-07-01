@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
+<link rel="stylesheet" href="../../css/styles.css">
 <head>
   <?php
   include_once '../../includes/head.php';
@@ -86,6 +86,8 @@
       email.value = '';
       phone.value = '';
       status.value = '0';
+      btnSave.removeAttribute('data-id');
+      btnSave.textContent = 'Registrar'
     }
 
     btnSave.addEventListener('click', (e) => {

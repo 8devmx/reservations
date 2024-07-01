@@ -42,6 +42,14 @@ class Clients
         }
         echo json_encode($data);
     }
+    public function getClientsForEvents()
+    {
+        global $mysqli;
+        $sql = "SELECT clients.id, clients.name, clients.email, clients.phone, clients.active FROM clients";
+        $data = [];
+        $result = $mysqli->query($sql);
+        return $result;
+    }
 
     public function getOneData($post)
     {
@@ -102,7 +110,7 @@ class Clients
             echo json_encode($response);
             return;
         }
-        
+      
         $query = "INSERT IGNORE INTO clients (name, email, phone, active) VALUES ('$name', '$email', '$phone', '$status')";
         $mysqli->query($query);
 
@@ -115,7 +123,12 @@ class Clients
                 "message" => "Se registró correctamente el usuario de " . $name,
                 "status" => 2
             ];
-        }
+        } else {
+            $response = [
+              "message" => "El correo electrónico o teléfono ya está registrado, no se ha insertado un nuevo registro",
+              "status" => 1
+            ];
+          }
         echo json_encode($response);
     }
 
