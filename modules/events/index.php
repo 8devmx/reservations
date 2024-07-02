@@ -15,22 +15,22 @@
   <div class="container-fluid">
     <div class="row">
       <?php include_once '../../includes/sidebar.php'; ?>
-      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 animate__animated animate__faster" id="viewData">
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 animate_animated animate_faster" id="viewData">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-          <h1 class="h2">Events</h1>
+          <h1 class="h2">Reservaciones</h1>
           <div class="ml-md-auto d-flex align-items-center">
-              <form class="d-flex custom-margin me-3" id="searchForm">
+              <form class="d-flex custom-margin me-1" id="searchForm">
               <div class="btn-group me-1">
-                <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Selecciona un cliente</button>
+                <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="position: relative;right: 10px;">Filtro</button>
                 <ul class="dropdown-menu" id="clientUL">
                 <li><a class="dropdown-item" href="#" data-client-id="all">Todos</a></li>
                     <?php foreach ($clients as $client): ?><li><a class="dropdown-item" href="#" data-client-id="<?php echo $client->id; ?>"><?php echo $client->name; ?></a></li>
                     <?php endforeach; ?> 
                 </ul>
+                <input type="text" class="form-control" placeholder="Buscar..." id="searchInput">
             </div>
-                <input type="text" class="form-control me-1" placeholder="Buscar.." id="searchInput">
               </form>
-            <button class="btn btn-warning" id="btnNew" value="Buscar">+ Nuevo</button>
+            <button class="btn btn-warning me-2" id="btnNew" value="Buscar">+ Nuevo</button>
           </div>
         </div>
         <div class="table-responsive small">
@@ -42,13 +42,14 @@
                 <th scope="col">Fecha de Inicio</th>
                 <th scope="col">Fecha de Fin</th>
                 <th scope="col">Status</th>
+                <th scope="col">Acciones</th>
               </tr>
             </thead>
             <tbody id="results"></tbody>
           </table>
         </div>
       </main>
-      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 animate__animated animate__faster" id="viewForm">
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 animate_animated animate_faster" id="viewForm">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom ">
           <h1 class="h2">Events</h1>
           <button class="btn btn-dark" id="btnClose">Cerrar</button>
