@@ -16,18 +16,19 @@
       <?php include_once '../../includes/sidebar.php'; ?>
       <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4" id="viewData">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-          <h1 class="h2">Users</h1>
+          <h1 class="h2">Usuarios</h1>
           <div class="ml-md-auto d-flex align-items-center">
             <div class="btn-group me-2" role="group">
-              <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="position: relative;right: 10px;">Filtro</button>
+              <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="position: relative;right: 10px;">Filtro</button>
               <ul class="dropdown-menu" id="filterMenu">
                 <li><a class="dropdown-item" data-rol="all">Todos</a></li>
-                <li><a class="dropdown-item" data-rol="1">Usuario</a></li>
-                <li><a class="dropdown-item" data-rol="2">Administrador</a></li>
+                <li><a class="dropdown-item" data-rol="1">Administrador</a></li>
+                <li><a class="dropdown-item" data-rol="2">Usuario</a></li>
               </ul>
+              <input type="text" id="searchInput" class="form-control" placeholder="Buscar...">
             </div>
-            <input type="text" id="searchInput" class="form-control" placeholder="Buscar" style="position: relative; left: -10px;">
-            <button class="btn btn-warning me-2" id="btnNew">+Nuevo</button>
+            
+            <button class="btn btn-warning me-2" id="btnNew">+ Nuevo</button>
           </div>
         </div>
         <div class="table-responsive small">
@@ -67,8 +68,8 @@
           <div class="form-group col-sm-6">
             <label for="rol">Rol</label>
             <select name="rol" id="rol" class="form-control">
-              <option value="1">Usuario</option>
-              <option value="2">Administrador</option>
+              <option value="1">Administrador</option>
+              <option value="2">Usuario</option>
             </select>
           </div>
           <div class="form-group col-sm-6">
@@ -275,6 +276,18 @@
       const query = searchInput.value.trim();
       getAllData(query);
     });
+    
+    // Limpia el buscador
+    const clearSearch = () => {
+    searchInput.value = '';
+  }
+
+  btnClose.addEventListener('click', (e) => {
+    e.preventDefault();
+    clearForm();
+    clearSearch();
+    showData();
+  });
   </script>
 </body>
 

@@ -20,18 +20,15 @@
           <h1 class="h2">Roles</h1>
           <div class="ml-md-auto d-flex align-items-center">
           <div class="btn-group me-2" role="group">
-            <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Filtro</button>
+          <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="position: relative;right: 10px;">Filtro</button>
             <ul class="dropdown-menu" id="filterMenu">
-              <li><a class="dropdown-item" href="#" data-status="all">Todos</a></li>
-              <li><a class="dropdown-item" href="#" data-status="1">Activo</a></li>
-              <li><a class="dropdown-item" href="#" data-status="0">Inactivo</a></li>
+              <li><a class="dropdown-item" data-status="all">Todos</a></li>
+              <li><a class="dropdown-item" data-status="1">Activo</a></li>
+              <li><a class="dropdown-item" data-status="0">Inactivo</a></li>
             </ul>
+            <input type="text" id="searchInput" class="form-control" placeholder="Buscar...">
           </div>
-              <form class="d-flex custom-margin me-3" id="searchForm">
-                <input class="form-control me-1" type="search" placeholder="Buscar.." name="Search" id="searchInput">
-                <button class="btn btn-outline-secondary" type="submit" value="Buscar">Buscar</button>
-              </form>
-            <button class="btn btn-warning" id="btnNew">+ Nuevo</button>
+          <button class="btn btn-warning me-2" id="btnNew">+ Nuevo</button>
           </div>
         </div>
         <div class="table-responsive small">
@@ -40,6 +37,7 @@
               <tr>
                 <th scope="col">Nombre</th>
                 <th scope="col">Status</th>
+                <th scope="col">Acciones</th>
               </tr>
             </thead>
             <tbody id="results"></tbody>
@@ -86,8 +84,7 @@
         alert('Todos los campos son obligatorios.');
         return;
       }
-
-
+      
       let obj = {
         action: 'insert',
         name: name.value,
@@ -166,9 +163,10 @@
         })
     }
 
-    const getAllData = () => {
+    const getAllData = (query = '') => {
       const obj = {
-        action: 'showData'
+        action: 'showData',
+        query: query
       }
       fetch('../../includes/Roles.php', {
           method: 'POST',
@@ -196,39 +194,6 @@
         })
     }
 
-    document.getElementById('searchForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const query = document.getElementById('searchInput').value;
-      const obj = {
-        action: 'search',
-        query: query
-      }
-      fetch('../../includes/Roles.php', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(obj)
-        })
-        .then(response => response.json())
-        .then(json => {
-          let rowTemplate = ''
-          json.forEach(row => {
-            rowTemplate += `
-            <tr>
-              <td>${row.name}</td>
-              <td>${row.active == 1 ? "Activo" : "Inactivo"}</td>
-              <td>
-                <button type="button" class="btn btn-warning btnEdit" data-id="${row.id}">Editar</button>
-                <button type="button" class="btn btn-danger btnDelete" data-id="${row.id}">Eliminar</button>
-              </td>
-            </tr>
-            `
-          })
-          results.innerHTML = rowTemplate
-        })
-        .catch(error => console.error('Error:', error));
-    });
               //getelemtbyid es para pedirle al html un identificador único este caso el filtermenu.
     document.getElementById('filterMenu').addEventListener('click', (e) => { 
       e.preventDefault();
@@ -246,7 +211,7 @@
         })
         .then(response => response.json())
         .then(json => {
-          let rowTemplate = ''
+          let rowTemplate = '';
           json.forEach(row => {
             rowTemplate += `
             <tr>
@@ -261,10 +226,9 @@
           })
           results.innerHTML = rowTemplate
         })
-        .catch(error => console.error('Error:', error));
     });
 
-    getAllData()
+    getAllData();
 
     results.addEventListener('click', e => {
       e.preventDefault()
@@ -275,6 +239,24 @@
         deleteData(e)
       }
     })
+
+    const searchInput = document.querySelector('#searchInput');
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.trim();
+      getAllData(query);
+    });
+
+    // Limpia el buscador
+    const clearSearch = () => {
+    searchInput.value = '';
+  }
+
+  btnClose.addEventListener('click', (e) => {
+    e.preventDefault();
+    clearForm();
+    clearSearch();
+    showData();
+  });
 
   </script>
 </body>

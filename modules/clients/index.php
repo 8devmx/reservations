@@ -26,9 +26,9 @@
                 <li><a class="dropdown-item" data-status="1">Activo</a></li>
                 <li><a class="dropdown-item" data-status="0">Inactivo</a></li>
               </ul>
+              <input type="text" id="searchInput" class="form-control" placeholder="Buscar...">
             </div>
-            <input type="text" id="searchInput" class="form-control" placeholder="Buscar" style="position: relative; left: -10px;">
-            <button class="btn btn-warning me-2" id="btnNew">+Nuevo</button>
+            <button class="btn btn-warning me-2" id="btnNew">+ Nuevo</button>
           </div>
         </div>
         <div class="table-responsive small">
@@ -269,6 +269,18 @@
       const query = searchInput.value.trim();
       getAllData(query);
     });
+
+    // Limpia el buscador
+    const clearSearch = () => {
+    searchInput.value = '';
+  }
+
+  btnClose.addEventListener('click', (e) => {
+    e.preventDefault();
+    clearForm();
+    clearSearch();
+    showData();
+  });
   </script>
 </body>
 

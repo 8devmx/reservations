@@ -6,7 +6,7 @@ if ($post) {
   $roles = new Roles();
   switch ($post['action']) {
     case 'showData':
-      $roles->getAllData();
+      $roles->getAllData($post['query'] ?? '');
       break;
     case 'insert':
       $roles->insertData($post);
@@ -19,9 +19,6 @@ if ($post) {
       break;
     case 'update':
       $roles->updateData($post);
-      break;
-    case 'search':
-      $roles->searchData($post['query']);
       break;
     case 'filter':
       $roles->filterData($post['status']);
@@ -39,13 +36,17 @@ class Roles
     $this->mysqli = $mysqli;
   }
 
-  public function getAllData()
+  public function getAllData($query = '')
   {
-    $query = "SELECT * FROM roles";
-    $result = $this->mysqli->query($query);
+    global $mysqli;
+    $sql = "SELECT roles.id, roles.name, roles.active FROM roles";
+    if ($query != '') {
+        $sql .= " WHERE roles.name LIKE '%$query%'";
+    }
     $data = [];
+    $result = $mysqli->query($sql);
     while ($row = $result->fetch_object()) {
-      $data[] = $row;
+        $data[] = $row;
     }
     echo json_encode($data);
   }
@@ -94,7 +95,6 @@ class Roles
     $nombre = $data['name'];
     $status = $data['status'];
 
-
     if (empty($nombre)) {
       $response = [
           "message" => "Todos los campos son obligatorios.",
@@ -103,7 +103,7 @@ class Roles
       echo json_encode($response);
       return;
   }
-    
+  
     $query = "INSERT IGNORE INTO roles (name, active) VALUES ('$nombre', '$status')";
     $this->mysqli->query($query);
 
@@ -143,28 +143,19 @@ class Roles
     echo json_encode($response);
   }
 
-  public function searchData($query)
-  {
-    $search = "%$query%";
-    $query = "SELECT * FROM roles WHERE name LIKE '$search'";
-    $result = $this->mysqli->query($query);
-    $data = [];
-    while ($row = $result->fetch_object()) {
-      $data[] = $row;
-    }
-    echo json_encode($data);
-  }
-
   public function filterData($status)
   {
-    $query = ($status == 'all') ? "SELECT * FROM roles" : "SELECT * FROM roles WHERE active = '$status'";
-    $result = $this->mysqli->query($query);
+    global $mysqli;
+    $sql = "SELECT roles.id, roles.name, roles.active FROM roles";
+    if ($status !== 'all') {
+        $sql .= " WHERE roles.active = '$status'";
+    }
     $data = [];
+    $result = $mysqli->query($sql);
     while ($row = $result->fetch_object()) {
-      $data[] = $row;
+        $data[] = $row;
     }
     echo json_encode($data);
-  }
+}
 }
 ?>
-

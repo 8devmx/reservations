@@ -6,7 +6,7 @@ if ($post) {
   $users = new User();
   switch ($post['action']) {
     case 'showData':
-      $users->getAllData();
+      $users->getAllData($post['query'] ?? '');
       break;
     case 'insert':
       $users->insertData($post);
@@ -20,15 +20,22 @@ if ($post) {
     case 'update':
       $users->updateData($post);
       break;
+    case 'filter':
+      $users->filterData($post['rol']);
+      break;
   }
 }
 
 class User
 {
-  public function getAllData()
+  public function getAllData($query = '')
   {
     global $mysqli;
-    $query = "SELECT users.id, users.name as name, users.email, users.phone, users.active, roles.name as rol FROM users LEFT JOIN roles on users.rol_id = roles.id";
+    $searchQuery = '';
+    if (!empty($query)) {
+      $searchQuery = "WHERE users.name LIKE '%$query%'";
+    }
+    $query = "SELECT users.id, users.name as name, users.email, users.phone, users.active, roles.name as rol FROM users LEFT JOIN roles on users.rol_id = roles.id $searchQuery";
     $data = [];
     $result = $mysqli->query($query);
     while ($row = $result->fetch_object()) {
@@ -36,6 +43,7 @@ class User
     }
     echo json_encode($data);
   }
+
   public function getUserForEvents()
   {
     global $mysqli;
@@ -145,6 +153,21 @@ class User
       ];
     }
     echo json_encode($response);
+  }
+
+  public function filterData($rol)
+  {
+      global $mysqli;
+      $sql = "SELECT users.id, users.name as name, users.email, users.phone, users.active, roles.name as rol FROM users LEFT JOIN roles on users.rol_id = roles.id";
+      if ($rol !== 'all') {
+          $sql .= " WHERE users.rol_id = '$rol'";
+      }
+      $data = [];
+      $result = $mysqli->query($sql);
+      while ($row = $result->fetch_object()) {
+          $data[] = $row;
+      }
+      echo json_encode($data);
   }
 }
 ?>
