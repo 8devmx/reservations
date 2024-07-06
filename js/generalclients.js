@@ -31,5 +31,4 @@ btnClose.addEventListener('click', (e) => {
   e.preventDefault();
   clearForm();
   showData();
-}); 
-
+});
