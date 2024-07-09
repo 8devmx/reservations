@@ -64,7 +64,20 @@ class Roles
     $status = $post['status'];
     $id = $post['id'];
 
+<<<<<<< Updated upstream
     $query = "UPDATE roles SET name = '$name', active = '$status' WHERE id = $id";
+=======
+    if (empty($name)) {
+      $response = [
+          "message" => "Todos los campos son obligatorios.",
+          "status" => 1
+      ];
+      echo json_encode($response);
+      return;
+  }
+
+    $query = "UPDATE IGNORE roles SET name = '$name', active = '$status' WHERE id = $id";
+>>>>>>> Stashed changes
     $this->mysqli->query($query);
 
     $response = [
@@ -75,6 +88,11 @@ class Roles
       $response = [
         "message" => "Se editó correctamente el Rol de $name",
         "status" => 2
+      ];
+    } else {
+      $response = [
+        "message" => "El Rol ya está registrado, no se ha insertado un nuevo registro",
+        "status" => 1
       ];
     }
     echo json_encode($response);

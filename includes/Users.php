@@ -55,7 +55,20 @@ class User
     $status = $post['status'];
     $id = $post['id'];
 
+<<<<<<< Updated upstream
     $query = "UPDATE users SET name = '$name', email = '$email', phone = '$phone', rol_id = '$rol', active = '$status' WHERE id = $id";
+=======
+    if (empty($name) || empty($email) || empty($phone)) {
+      $response = [
+          "message" => "Todos los campos son obligatorios.",
+          "status" => 1
+      ];
+      echo json_encode($response);
+      return;
+  }
+    
+    $query = "UPDATE IGNORE users SET name = '$name', email = '$email', phone = '$phone', rol_id = '$rol', active = '$status' WHERE id = $id";
+>>>>>>> Stashed changes
 
     global $mysqli;
     $mysqli->query($query);
@@ -68,6 +81,11 @@ class User
       $response = [
         "message" => "Se editó correctamente el usuario de " . $name,
         "status" => 2
+      ];
+    } else {
+      $response = [
+        "message" => "El correo electrónico o teléfono ya está registrado, no se ha insertado un nuevo registro",
+        "status" => 1
       ];
     }
     echo json_encode($response);

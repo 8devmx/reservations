@@ -85,7 +85,20 @@ class Events
     $status = $post['status'];
     $id = $post['id'];
 
+<<<<<<< Updated upstream
     $query = "UPDATE events SET title = '$title', description = '$description', start_date = '$start_date', start_hout = '$start_hout', end_date = '$end_date', end_hour = '$end_hour',  client_id = '$client', user_id = '$user', map = '$map', active = '$status' WHERE id = $id";
+=======
+    if (empty($title) || empty($description) || empty($start_date) || empty($start_hout) || empty($end_date) || empty($end_hour) || empty($map)) {
+      $response = [
+          "message" => "Todos los campos son obligatorios.",
+          "status" => 1
+      ];
+      echo json_encode($response);
+      return;
+  }
+
+    $query = "UPDATE IGNORE events SET title = '$title', description = '$description', start_date = '$start_date', start_hout = '$start_hout', end_date = '$end_date', end_hour = '$end_hour',  client_id = '$client', user_id = '$user', map = '$map', active = '$status' WHERE id = $id";
+>>>>>>> Stashed changes
 
     global $mysqli;
     $mysqli->query($query);
@@ -98,6 +111,11 @@ class Events
       $response = [
         "message" => "Se editó correctamente el usuario de " . $title,
         "status" => 2
+      ];
+    } else {
+      $response = [
+        "message" => "El Titulo ya está registrado, no se ha insertado un nuevo registro",
+        "status" => 1
       ];
     }
     echo json_encode($response);
@@ -142,7 +160,7 @@ class Events
       ];
     } else {
       $response = [
-        "message" => "El cliente y el usaurio ya está registrado, no se ha insertado un nuevo registro",
+        "message" => "El Titulo ya está registrado, no se ha insertado un nuevo registro",
         "status" => 1
       ];
     }
