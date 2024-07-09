@@ -1,8 +1,7 @@
 <!doctype html>
 <html lang="en">
-
+<link rel="stylesheet" href="../../css/styles.css">
 <head>
-  <link rel="stylesheet" href="../../css/styles.css">
   <?php
   include_once '../../includes/head.php';
   require_once '../../includes/events.php';
@@ -16,22 +15,22 @@
   <div class="container-fluid">
     <div class="row">
       <?php include_once '../../includes/sidebar.php'; ?>
-      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 animate__animated animate__faster" id="viewData">
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 animate_animated animate_faster" id="viewData">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-          <h1 class="h2">Events</h1>
+          <h1 class="h2">Reservaciones</h1>
           <div class="ml-md-auto d-flex align-items-center">
-              <form class="d-flex custom-margin me-3" id="searchForm">
+              <form class="d-flex custom-margin me-1" id="searchForm">
               <div class="btn-group me-1">
-                <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Selecciona un cliente</button>
+                <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="position: relative;right: 10px;">Filtro</button>
                 <ul class="dropdown-menu" id="clientUL">
+                <li><a class="dropdown-item" href="#" data-client-id="all">Todos</a></li>
                     <?php foreach ($clients as $client): ?><li><a class="dropdown-item" href="#" data-client-id="<?php echo $client->id; ?>"><?php echo $client->name; ?></a></li>
                     <?php endforeach; ?> 
                 </ul>
+                <input type="text" class="form-control" placeholder="Buscar..." id="searchInput">
             </div>
-                <input type="search" class="form-control me-1" placeholder="Buscar.." id="searchInput">
-                <button class="btn btn-outline-secondary" type="submit">Buscar</button>
               </form>
-            <button class="btn btn-warning" id="btnNew" value="Buscar">+ Nuevo</button>
+            <button class="btn btn-warning me-2" id="btnNew" value="Buscar">+ Nuevo</button>
           </div>
         </div>
         <div class="table-responsive small">
@@ -43,13 +42,14 @@
                 <th scope="col">Fecha de Inicio</th>
                 <th scope="col">Fecha de Fin</th>
                 <th scope="col">Status</th>
+                <th scope="col">Acciones</th>
               </tr>
             </thead>
             <tbody id="results"></tbody>
           </table>
         </div>
       </main>
-      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 animate__animated animate__faster" id="viewForm">
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 animate_animated animate_faster" id="viewForm">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom ">
           <h1 class="h2">Events</h1>
           <button class="btn btn-dark" id="btnClose">Cerrar</button>
@@ -81,11 +81,37 @@
           </div>
           <div class="form-group">
             <label for="client">Cliente:</label>
-            <input type="text" class="form-control" id="client" name="client" placeholder="Escribe tu ID de cliente">
+            <select name="client" id="client" class="form-control">
+            <option value="" selected>Seleccione una Opcion</option>
+              <?php 
+              require_once "../../includes/Clients.php";
+              $clientes = new Clients();
+              $data = $clientes->getClientsForEvents();
+              foreach ($data as $key => $value) {
+              ?> 
+              <option value="<?php echo $value['id']; ?>"><?php echo $value['name']; ?></option>
+              <?php
+              }
+              print_r($data);
+              ?>
+            </select>
           </div>
           <div class="form-group">
             <label for="user">Usuarios:</label>
-            <input type="text" class="form-control" id="user" name="user" placeholder="Usuario ID">
+            <select class="form-control" name="user" id="user">
+            <option value="" selected>Seleccione una Opcion</option>
+              <?php 
+              require_once "../../includes/Users.php";
+              $usuario = new User();
+              $data = $usuario->getUserForEvents();
+              foreach ($data as $key => $value) {
+              ?> 
+              <option value="<?php echo $value['id']; ?>"><?php echo $value['name']; ?></option>
+              <?php
+              }
+              print_r($data);
+              ?>
+            </select>
           </div>
           <div class="form-group">
             <label for="map">Mapa:</label>
@@ -94,8 +120,8 @@
           <div class="form-group">
             <label for="status">Status</label>
             <select name="status" id="status" class="form-control">
-              <option value="0">Inactivo</option>
               <option value="1">Activo</option>
+              <option value="0">Inactivo</option>
             </select>
           </div>
           <div class="form-group mt-3">
@@ -106,10 +132,10 @@
     </div>
   </div>
   <script src="../../js/generalEvents.js"></script>
+
   <script>
     const clearForm = () => {
       title.value = ''
-      status.value = 0
       description.value = ''
       start_date.value = ''
       start_hout.value = ''
@@ -118,16 +144,22 @@
       client.value = ''
       user.value = ''
       map.value = ''
+      status.value = 0
       btnSave.removeAttribute('data-id');
       btnSave.textContent = 'Registrar'
     }
+    
     btnSave.addEventListener('click', (e) => {
       e.preventDefault()
+
+      if (!title.value.trim() || !description.value.trim() || !start_date.value.trim() || !start_hout.value.trim() || !end_date.value.trim() || !end_hour.value.trim() || !map.value.trim()) {
+        alert('Todos los campos son obligatorios.');
+        return;
+      }
 
       let obj = {
         action: 'insert',
         title: title.value,
-        status: status.value,
         description: description.value,
         start_date: start_date.value,
         start_hout: start_hout.value,
@@ -135,7 +167,8 @@
         end_hour: end_hour.value,
         client: client.value,
         user: user.value,
-        map: map.value
+        map: map.value,
+        status: status.value
       }
 
       if (btnSave.hasAttribute('data-id')) {
@@ -158,6 +191,7 @@
             showData();
             btnSave.removeAttribute('data-id');
             btnSave.textContent = 'Registrar'
+            location.reload()
           }
           getAllData()
         })
@@ -208,8 +242,8 @@
             start_hout.value = json.start_hout
             end_date.value = json.end_date
             end_hour.value = json.end_hour
-            client.value = json.client
-            user.value = json.user
+            client.value = json.client_id
+            user.value = json.user_id
             map.value = json.map
             status.value = json.active
             btnSave.textContent = 'Editar'
@@ -217,9 +251,10 @@
           })
       }
 
-      const getAllData = () => {
+      const getAllData = (query = '') => {
       const obj = {
         action: 'showData',
+        query: query
       }
       fetch('../../includes/events.php', {
           method: 'POST',
@@ -249,47 +284,14 @@
           results.innerHTML = rowTemplate
         })
     }
-    
-    document.getElementById('searchForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const query = document.getElementById('searchInput').value;
-      const obj = {
-        action: 'search',
-        query: query
-      }
-      fetch('../../includes/events.php', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(obj)
-        })
-        .then(response => response.json())
-        .then(json => {
-          let rowTemplate = ''
-          json.forEach(row => {
-            rowTemplate += `
-            <tr>
-               <td>${row.title}</td>
-              <td>${row.client}</td>
-              <td>${row.start_date + " " + row.start_hout}</td>
-              <td>${row.end_date + " " + row.end_hour}</td>
-              <td>${row.active == 1 ? "Activo" : "Inactivo"}</td>
-              <td>
-                <button type="button" class="btn btn-warning btnEdit" data-id="${row.id}">Editar</button>
-                <button type="button" class="btn btn-danger btnDelete" data-id="${row.id}">Eliminar</button>
-            </tr>
-            `
-          })
-          results.innerHTML = rowTemplate
-        })
-        .catch(error => console.error('Error:', error));
-    });
 
     document.getElementById('clientUL').addEventListener('click', (e) => {
     e.preventDefault();
     if (e.target.classList.contains('dropdown-item')) {
         const clientId = e.target.getAttribute('data-client-id');
+        if (clientId === 'all') {
+            getAllData();
+        } else {
   const obj = {
     action: 'filtroData',
     client_id: clientId
@@ -323,7 +325,8 @@
     })
     .catch(error => console.error('Error:', error));
   }
-});
+}
+})
 
     getAllData()
 
@@ -336,6 +339,23 @@
           deleteData(e)
         }
       })
+      const searchInput = document.querySelector('#searchInput');
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.trim();
+      getAllData(query);
+    });
+  
+    // Limpia el buscador
+    const clearSearch = () => {
+    searchInput.value = '';
+  }
+
+  btnClose.addEventListener('click', (e) => {
+    e.preventDefault();
+    clearForm();
+    clearSearch();
+    showData();
+  });
   </script>
 </body>
 
