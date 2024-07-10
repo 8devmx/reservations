@@ -4,11 +4,6 @@
     color: #fff; /* Color del texto cuando se pasa el cursor */
 }
 
-.sidebar .nav-link.active {
-    background-color: #343a40; /* Color de fondo para el enlace activo */
-    color: #fff; /* Color del texto para el enlace activo */
-}
-
 .sidebar .nav-link .icon {
     margin-top: -20px;
     height: 59px;
@@ -17,3 +12,11 @@
     align-items: center;
 }
 
+/* Estilos adicionales para la transición suave */
+.sidebar.collapsed {
+    width: 55px; /* Ancho colapsado */
+  }
+
+  .sidebar {
+    transition: width 0.3s ease; /* Transición suave de ancho */
+  }

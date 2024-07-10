@@ -33,3 +33,19 @@
   </ul>
   <p><strong id="NameLogin"></strong> Deseas cerrar sesion? <a href="#" id="Logout">Pulsa Aqui</a></p>
 </div>
+
+<!-- Script JavaScript -->
+<script>
+    // Obtener el elemento del sidebar
+    const sidebar = document.querySelector('.sidebar');
+
+    // Agregar evento al mover el mouse dentro del sidebar
+    sidebar.addEventListener('mouseenter', function() {
+      this.classList.remove('collapsed'); // Quitar clase 'collapsed'
+    });
+
+    // Agregar evento al mover el mouse fuera del sidebar
+    sidebar.addEventListener('mouseleave', function() {
+      this.classList.add('collapsed'); // Agregar clase 'collapsed'
+    });
+  </script>
