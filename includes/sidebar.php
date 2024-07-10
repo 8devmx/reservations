@@ -1,7 +1,7 @@
 <div class="sidebar border border-right col-md-3 col-lg-2 p-0 bg-dark text-white" style="height: 120vh;">
   <ul class="nav flex-column">
     <li class="nav-item">
-      <a href="#" class="nav-link text-white d-flex active">
+      <a href="http://localhost/reservations/modules/dashboard/index.php" class="nav-link text-white d-flex active">
         <div class="icon me-2"><i class="bi bi-speedometer2"></i></div>
         <p>Dashboard</p>
       </a>
@@ -31,6 +31,7 @@
       </a>
     </li>
   </ul>
+  <p><strong id="NameLogin"></strong> Deseas cerrar sesion? <a href="#" id="Logout">Pulsa Aqui</a></p>
 </div>
 
 <!-- Script JavaScript -->

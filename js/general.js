@@ -36,5 +36,14 @@ btnClose.addEventListener('click', (e) => {
   showData()
 })
 
+const UserSidebar = JSON.parse(sessionStorage.getItem("users"))
+NameLogin.innerText = UserSidebar.name
 
-  
+Logout.addEventListener('click', (e) => {
+  e.preventDefault()
+  const confirmation = confirm("Deseas cerrar sesion?")
+  if (confirmation){
+    sessionStorage.removeItem("users")
+    location.href = "/reservations/modules/login.php"
+  }
+})
