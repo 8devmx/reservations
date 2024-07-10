@@ -80,7 +80,7 @@ class User
       return;
   }
     
-    $query = "UPDATE users SET name = '$name', email = '$email', phone = '$phone', rol_id = '$rol', active = '$status' WHERE id = $id";
+    $query = "UPDATE IGNORE users SET name = '$name', email = '$email', phone = '$phone', rol_id = '$rol', active = '$status' WHERE id = $id";
 
     global $mysqli;
     $mysqli->query($query);
@@ -93,6 +93,11 @@ class User
       $response = [
         "message" => "Se editó correctamente el usuario de " . $name,
         "status" => 2
+      ];
+    } else {
+      $response = [
+        "message" => "El correo electrónico o teléfono ya está registrado, no se ha insertado un nuevo registro",
+        "status" => 1
       ];
     }
     echo json_encode($response);
