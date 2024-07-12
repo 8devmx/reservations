@@ -6,7 +6,7 @@ if ($post) {
   $users = new User();
   switch ($post['action']) {
     case 'showData':
-      $users->getAllData($post['query'] ?? '');
+      $users->getAllData();
       break;
     case 'insert':
       $users->insertData($post);
@@ -20,22 +20,18 @@ if ($post) {
     case 'update':
       $users->updateData($post);
       break;
-    case 'filter':
-      $users->filterData($post['rol']);
+    case 'login':
+      $users->loginData($post);
       break;
   }
 }
 
 class User
 {
-  public function getAllData($query = '')
+  public function getAllData()
   {
     global $mysqli;
-    $searchQuery = '';
-    if (!empty($query)) {
-      $searchQuery = "WHERE users.name LIKE '%$query%'";
-    }
-    $query = "SELECT users.id, users.name as name, users.email, users.phone, users.active, roles.name as rol FROM users LEFT JOIN roles on users.rol_id = roles.id $searchQuery";
+    $query = "SELECT users.id, users.name as name, users.email, users.phone, users.active, roles.name as rol FROM users LEFT JOIN roles on users.rol_id = roles.id";
     $data = [];
     $result = $mysqli->query($query);
     while ($row = $result->fetch_object()) {
@@ -44,15 +40,7 @@ class User
     echo json_encode($data);
   }
 
-  public function getUserForEvents()
-  {
-    global $mysqli;
-    $sql = "SELECT users.id, users.name, users.email, users.password, users.phone, users.rol_id, users.active FROM users";
-    $data = [];
-    $result = $mysqli->query($sql);
-    return $result;
-  }
-
+  
   public function getOneData($post)
   {
     $id = $post['id'];
@@ -60,6 +48,17 @@ class User
     $query = "SELECT * FROM users WHERE id = $id";
     $result = $mysqli->query($query);
     echo json_encode($result->fetch_object());
+  }
+
+  public function loginData($post)
+  {
+    global $mysqli;
+    $email = $post['correo'];
+    $password = $post['passwords'];
+    $consulta = "SELECT * FROM users WHERE email = '$email' AND password = '$password' AND active = 1";
+    $result = $mysqli->query($consulta);
+    $row = $result->fetch_array(MYSQLI_ASSOC);
+    echo json_encode($row);
   }
 
   public function updateData($post)
@@ -111,16 +110,6 @@ class User
     $phone = $data['phone'];
     $rol = $data['rol'];
     $status = $data['status'];
-
-    if (empty($nombre) || empty($email) || empty($phone)) {
-      $response = [
-          "message" => "Todos los campos son obligatorios.",
-          "status" => 1
-      ];
-      echo json_encode($response);
-      return;
-  }
-
     $query = "INSERT IGNORE INTO users (name, email, phone, rol_id, active) VALUES ('$nombre', '$email', '$phone', '$rol', '$status')";
     $mysqli->query($query);
 
@@ -158,21 +147,6 @@ class User
       ];
     }
     echo json_encode($response);
-  }
-
-  public function filterData($rol)
-  {
-      global $mysqli;
-      $sql = "SELECT users.id, users.name as name, users.email, users.phone, users.active, roles.name as rol FROM users LEFT JOIN roles on users.rol_id = roles.id";
-      if ($rol !== 'all') {
-          $sql .= " WHERE users.rol_id = '$rol'";
-      }
-      $data = [];
-      $result = $mysqli->query($sql);
-      while ($row = $result->fetch_object()) {
-          $data[] = $row;
-      }
-      echo json_encode($data);
   }
 }
 ?>
