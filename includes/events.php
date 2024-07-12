@@ -79,7 +79,7 @@ class Events
       return;
   }
 
-    $query = "UPDATE events SET title = '$title', description = '$description', start_date = '$start_date', start_hout = '$start_hout', end_date = '$end_date', end_hour = '$end_hour',  client_id = '$client', user_id = '$user', map = '$map', active = '$status' WHERE id = $id";
+    $query = "UPDATE IGNORE events SET title = '$title', description = '$description', start_date = '$start_date', start_hout = '$start_hout', end_date = '$end_date', end_hour = '$end_hour',  client_id = '$client', user_id = '$user', map = '$map', active = '$status' WHERE id = $id";
 
     global $mysqli;
     $mysqli->query($query);
@@ -92,6 +92,11 @@ class Events
       $response = [
         "message" => "Se editó correctamente el Evento de " . $title,
         "status" => 2
+      ];
+    } else {
+      $response = [
+        "message" => "El Titulo ya está registrado, no se ha insertado un nuevo registro",
+        "status" => 1
       ];
     }
     echo json_encode($response);
@@ -134,7 +139,7 @@ class Events
       ];
     } else {
       $response = [
-        "message" => "El cliente y el usaurio ya está registrado, no se ha insertado un nuevo registro",
+        "message" => "El Titulo ya está registrado, no se ha insertado un nuevo registro",
         "status" => 1
       ];
     }

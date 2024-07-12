@@ -77,7 +77,7 @@ class Clients
             return;
         }
 
-        $query = "UPDATE clients SET name = '$name', email = '$email', phone = '$phone', active = '$status' WHERE id = $id";
+        $query = "UPDATE  IGNORE clients SET name = '$name', email = '$email', phone = '$phone', active = '$status' WHERE id = $id";
         global $mysqli;
         $mysqli->query($query);
 
@@ -90,7 +90,12 @@ class Clients
                 "message" => "Se editó correctamente el usuario de " . $name,
                 "status" => 2
             ];
-        }
+        } else {
+            $response = [
+              "message" => "El correo electrónico o teléfono ya está registrado, no se ha insertado un nuevo registro",
+              "status" => 1
+            ];
+          }
         echo json_encode($response);
     }
 

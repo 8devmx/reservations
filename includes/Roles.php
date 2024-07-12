@@ -74,7 +74,7 @@ class Roles
       return;
   }
 
-    $query = "UPDATE roles SET name = '$name', active = '$status' WHERE id = $id";
+    $query = "UPDATE IGNORE roles SET name = '$name', active = '$status' WHERE id = $id";
     $this->mysqli->query($query);
 
     $response = [
@@ -85,6 +85,11 @@ class Roles
       $response = [
         "message" => "Se editó correctamente el Rol de $name",
         "status" => 2
+      ];
+    } else {
+      $response = [
+        "message" => "El Rol ya está registrado, no se ha insertado un nuevo registro",
+        "status" => 1
       ];
     }
     echo json_encode($response);
