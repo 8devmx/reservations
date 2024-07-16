@@ -1,0 +1,21 @@
+#external-events {
+    padding: 10px;
+    width: 150px;
+    height: 350px;
+    overflow: auto;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+#external-events .fc-event {
+    margin: 10px 0;
+    padding: 8px;
+    background: #3a87ad;
+    color: #fff;
+    cursor: pointer;
+}
+
+#calendar {
+    margin-left: 200px;
+}
