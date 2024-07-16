@@ -23,7 +23,7 @@
           <label for="inputcorreo" class="sr-only">Correo Electrónico</label>
         </div>
         <div class="form-floating mb-3">
-          <input type="password" id="inputpasswords" class="form-control" placeholder="passwords" name="passwords">
+          <input type="password" id="inputpasswords" class="form-control" placeholder="password" name="passwords">
           <label for="inputpasswords" class="sr-only">Password</label>
         </div>
         <button class="w-100 btn btn-lg btn-primary" type="submit" id="btnLogin">Iniciar Sesión</button>

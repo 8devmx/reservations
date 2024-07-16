@@ -24,11 +24,10 @@ document.getElementById('btnLogin').addEventListener('click', event => {
   .then(response => response.json())
   .then(json => {
     if (!json) {
-      alert("No se pudo iniciar sesión");
+      alert("Correo y/o contraseña incorrectos!");
       return false;
     }
     sessionStorage.setItem("users", JSON.stringify(json));
-    location.href = "../modules/dashboard/index.php";
+    location.href = "../modules/users/index.php";
   })
-  .catch(error => console.error('Error:', error));
 });
