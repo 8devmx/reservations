@@ -40,7 +40,15 @@ class User
     echo json_encode($data);
   }
 
-  
+  public function getUserForEvents()
+  {
+    global $mysqli;
+    $sql = "SELECT users.id, users.name, users.email, users.password, users.phone, users.rol_id, users.active FROM users WHERE active = 1";
+    $data = [];
+    $result = $mysqli->query($sql);
+    return $result;
+  }
+
   public function getOneData($post)
   {
     $id = $post['id'];
@@ -110,6 +118,16 @@ class User
     $phone = $data['phone'];
     $rol = $data['rol'];
     $status = $data['status'];
+
+    if (empty($nombre) || empty($email) || empty($phone)) {
+      $response = [
+          "message" => "Todos los campos son obligatorios.",
+          "status" => 1
+      ];
+      echo json_encode($response);
+      return;
+  }
+
     $query = "INSERT IGNORE INTO users (name, email, phone, rol_id, active) VALUES ('$nombre', '$email', '$phone', '$rol', '$status')";
     $mysqli->query($query);
 

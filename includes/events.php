@@ -197,7 +197,7 @@ class Events
   public function getClients()
 {
   global $mysqli;
-  $query = "SELECT id, name FROM clients";
+  $query = "SELECT id, name FROM clients WHERE active = 1";
   $result = $mysqli->query($query);
   $clients = [];
   while ($row = $result->fetch_object()) {

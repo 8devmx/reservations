@@ -45,7 +45,7 @@ class Clients
     public function getClientsForEvents()
     {
         global $mysqli;
-        $sql = "SELECT clients.id, clients.name, clients.email, clients.phone, clients.active FROM clients";
+        $sql = "SELECT clients.id, clients.name, clients.email, clients.phone, clients.active FROM clients WHERE active = 1";
         $data = [];
         $result = $mysqli->query($sql);
         return $result;
