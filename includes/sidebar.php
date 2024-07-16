@@ -31,7 +31,7 @@
       </a>
     </li>
   </ul>
-  <p><strong id="NameLogin"></strong> Deseas cerrar sesion? <a href="#" id="Logout">Pulsa Aqui</a></p>
+  <p><strong id="NameLogin"></strong><a href="#" id="Logout">Cerrar sesión</a></p>
 </div>
 
 <!-- Script JavaScript -->
