@@ -20,3 +20,41 @@
   .sidebar {
     transition: width 0.3s ease; /* Transición suave de ancho */
   }
+
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+#calendar {
+  height: 100%;
+}
+
+.fc-toolbar-title {
+  text-align: center;
+  width: 100%;
+}
+
+.fc-toolbar.fc-header-toolbar {
+  display: flex;
+  justify-content: center;
+}
+
+.fc-toolbar-chunk {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+
+.fc-toolbar-chunk:first-child {
+  justify-content: flex-start;
+  margin-left: 20px; 
+}
+
+.fc-toolbar-chunk:last-child {
+  justify-content: flex-end;
+  margin-right: 20px; 
+}
