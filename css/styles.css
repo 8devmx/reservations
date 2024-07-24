@@ -1,4 +1,6 @@
 @import '../node_modules/animate.css/animate.min.css';
+
+
 .sidebar .nav-link:hover {
     background-color: #495057; /* Color de fondo cuando se pasa el cursor */
     color: #fff; /* Color del texto cuando se pasa el cursor */
@@ -10,11 +12,13 @@
     margin-right: 25px !important;
     display: flex; 
     align-items: center;
+    display: none;
 }
 
 /* Estilos adicionales para la transición suave */
 .sidebar.collapsed {
     width: 55px; /* Ancho colapsado */
+    
   }
 
   .sidebar {
