@@ -138,4 +138,16 @@ body, html {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
+/* Tooltipster theme */
+.tooltipster-light {
+  background: #f5f5f5;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  border-radius: 5px;
+}
+
+
+
+
 
