@@ -94,23 +94,50 @@
                             <form id="eventForm">
                                 <label for="title">Título:</label>
                                 <input type="text" id="title" name="title" class="swal2-input" required>
+                                <label for="description">Descripción:</label>
+                                <textarea id="description" name="description" class="swal2-textarea"></textarea>
                                 <label for="start_date">Fecha de inicio:</label>
                                 <input type="date" id="start_date" name="start_date" class="swal2-input" value="${info.dateStr}" required>
                                 <label for="end_date">Fecha de fin:</label>
                                 <input type="date" id="end_date" name="end_date" class="swal2-input" required>
+                                <label for="start_hout">Hora de inicio:</label>
+                                <input type="time" id="start_hout" name="start_hout" class="swal2-input" required>
+                                <label for="end_hour">Hora de fin:</label>
+                                <input type="time" id="end_hour" name="end_hour" class="swal2-input" required>
+                                <label for="client">Cliente:</label>
+                                <select id="client" name="client" class="swal2-input">
+                                    <option value="1">Cliente 1</option>
+                                    <option value="2">Cliente 2</option>
+                                    <option value="3">Cliente 3</option>
+                                </select>
+                                <label for="user">Usuario:</label>
+                                <select id="user" name="user" class="swal2-input">
+                                    <option value="1">Usuario 1</option>
+                                    <option value="2">Usuario 2</option>
+                                    <option value="3">Usuario 3</option>
+                                </select>
+                                <label for="map">Mapa:</label>
+                                <input type="text" id="map" name="map" class="swal2-input" placeholder="URL del mapa">
                             </form>
                         `,
                         focusConfirm: false,
                         preConfirm: () => {
                             const title = Swal.getPopup().querySelector('#title').value;
+                            const description = Swal.getPopup().querySelector('#description').value;
                             const startDate = Swal.getPopup().querySelector('#start_date').value;
                             const endDate = Swal.getPopup().querySelector('#end_date').value;
+                            const startHout = Swal.getPopup().querySelector('#start_hout').value;
+                            const endHour = Swal.getPopup().querySelector('#end_hour').value;
+                            const client = Swal.getPopup().querySelector('#client').value;
+                            const user = Swal.getPopup().querySelector('#user').value;
+                            const map = Swal.getPopup().querySelector('#map').value;
 
-                            if (!title || !startDate || !endDate) {
+                            if (!title || !description || !startDate || !endDate || !startHout || !endHour || !client || !user || !map) {
                                 Swal.showValidationMessage(`Por favor, completa todos los campos`);
                                 return;
                             }
 
+<<<<<<< Updated upstream
                             return {
                                 title,
                                 startDate,
@@ -136,6 +163,31 @@
                                         start_date: startDate,
                                         end_date: endDate
                                     })
+=======
+                            return { title, description, startDate, endDate, startHout, endHour, client, user, map };
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const { title, description, startDate, endDate, startHout, endHour, client, user, map } = result.value;
+                            
+                            fetch('includes/events.php', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    action: 'insert',
+                                    title: title,
+                                    description: description,
+                                    start_date: startDate,
+                                    end_date: endDate,
+                                    start_hout: startHout,
+                                    end_hour: endHour,
+                                    client: client,
+                                    user: user,
+                                    map: map,
+                                    status: 1
+>>>>>>> Stashed changes
                                 })
                                 .then(response => response.json())
                                 .then(data => {
