@@ -1,6 +1,5 @@
-<!doctype html>
 <html lang="en">
-<link rel="stylesheet" href="../../css/styles.css">
+<link rel="stylesheet" href="../css/styles.css">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
@@ -13,6 +12,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/locales-all.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- Incluir SweetAlert -->
 
     <style>
     #calendar {
@@ -20,11 +20,12 @@
       height: 800px; /* Altura fija */
       margin: auto;
     }
-</style>
+    </style>
 </head>
 
 <body>
 <script>
+    
 document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -42,11 +43,46 @@ document.addEventListener('DOMContentLoaded', function() {
                     hour12: true // Esta opción asegura que se usen AM y PM
                 }
             }
+        },
+        events: function(fetchInfo, successCallback, failureCallback) {
+            fetch('../../includes/events.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ action: 'showData' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                let events = data.map(event => ({
+                    id: event.id,
+                    title: event.title,
+                    start: event.start_date + 'T' + event.start_hout,
+                    end: event.end_date + 'T' + event.end_hour,
+                    description: event.description
+                }));
+                successCallback(events);
+            })
+            .catch(error => {
+                console.error('Error fetching events:', error);
+                failureCallback(error);
+            });
+        },
+        eventClick: function(info) {
+            var startTime = new Date(info.event.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            var endTime = new Date(info.event.end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            Swal.fire({
+                title: 'Recucuerda que',
+                text: `Tiene una reservacion hecha para ${info.event.title} a las ${startTime}.`,
+                icon: 'info',
+                confirmButtonText: 'OK'
+            });
         }
     });
     calendar.render();
 });
 </script>
+<script src="../../js/general.js"></script>
 <?php include_once '../../includes/header.php'; ?>
 <div class="container-fluid">
     <div class="row">
@@ -59,7 +95,6 @@ document.addEventListener('DOMContentLoaded', function() {
         </main>  
     </div>
 </div>
-
 
 <!-- Bootstrap JavaScript Libraries -->
 <script

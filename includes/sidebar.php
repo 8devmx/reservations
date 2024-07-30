@@ -49,3 +49,4 @@
       this.classList.add('collapsed'); // Agregar clase 'collapsed'
     });
   </script>
+  
