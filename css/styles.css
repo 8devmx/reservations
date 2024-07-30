@@ -21,129 +21,174 @@
     transition: width 0.3s ease; /* Transición suave de ancho */
   }
 
-/* Estilos/Calendario */  
-  body, html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    overflow: hidden;
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(to right, #ffecd2 0%, #fcb69f 100%);
+  .h2 {
+    text-align: center;
+    font-family: 'Times New Roman', Times, serif;
   }
-  
+
   #calendar {
-    height: 100%;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    margin: 20px;
-    overflow: hidden; /* Asegúrate de que el contenido no se salga */
+    font-family: 'Times New Roman', Times, serif;
   }
-  
-  /* Estilos adicionales para centrar el título */
+
+/* styles.css */
+
+/* General body and container styles */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Arial', sans-serif;
+  background: #f0f0f0;
+}
+
+.container-fluid {
+  padding: 20px;
+}
+
+h1.h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* FullCalendar styles */
+#calendar {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+/* FullCalendar toolbar styles */
+.fc-toolbar {
+  margin-bottom: 20px;
+}
+
+.fc-toolbar-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.fc-button {
+  background: #007bff;
+  border: none;
+  color: #fff;
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.fc-button:hover {
+  background: #0056b3;
+}
+
+.fc-button:disabled {
+  background: #d6d6d6;
+  cursor: not-allowed;
+}
+
+.fc-button-group .fc-button {
+  margin-right: 5px;
+}
+
+.fc-button-group .fc-button:last-child {
+  margin-right: 0;
+}
+
+/* FullCalendar day cell styles */
+.fc-daygrid-day {
+  border: 1px solid #ddd;
+  padding: 5px;
+}
+
+.fc-daygrid-day-number {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.fc-event {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 2px 5px;
+  font-size: 0.875rem;
+}
+
+/* Tooltip styles */
+.tooltipster-light {
+  background: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  border-radius: 4px;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
   .fc-toolbar-title {
-    text-align: center;
-    width: 100%;
-    font-size: 1.5em;
-    color: #333;
+    font-size: 1.2rem;
   }
-  
-  .fc-toolbar.fc-header-toolbar {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
+
+  .fc-button {
+    font-size: 0.75rem;
+    padding: 3px 6px;
   }
-  
-  .fc-toolbar-chunk {
-    flex: 1;
-    display: flex;
-    justify-content: center;
+
+  .fc-daygrid-day {
+    padding: 2px;
   }
-  
-  /* Ajustes para los botones de navegación y today */
-  .fc-toolbar-chunk:first-child {
-    justify-content: flex-start;
-    margin-left: 20px; /* Ajusta este valor según sea necesario */
+
+  .fc-event {
+    font-size: 0.75rem;
+    padding: 1px 3px;
   }
-  
-  .fc-toolbar-chunk:last-child {
-    justify-content: flex-end;
-    margin-right: 20px; /* Ajusta este valor según sea necesario */
-  }
-  
-  /* Estilos para el día seleccionado */
-  .selected-day {
-    background-color: #ccffcc !important; /* Verde claro */
-  }
-  
-  /* Estilos adicionales para el modal */
-  #event-modal label {
-    display: block;
-    margin-top: 10px;
-    color: #333;
-    font-weight: bold;
-  }
-  
-  #event-modal input, #event-modal textarea, #event-modal select {
-    width: calc(100% - 30px);
-    padding: 8px;
-    margin: 0 15px 10px 15px;
-    box-sizing: border-box;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    display: block;
-  }
-  
-  #event-modal textarea {
-    height: 100px;
-    resize: vertical;
-  }
-  
-  .ui-dialog .ui-dialog-buttonpane button {
-    background-color: #4CAF50;
-    border: none;
-    color: white;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 5px;
-  }
-  
-  .ui-dialog .ui-dialog-buttonpane button.ui-button {
-    background-color: #f44336;
-  }
-  
-  .ui-dialog .ui-dialog-buttonpane button.ui-button:nth-child(2) {
-    background-color: #008CBA;
-  }
-  
-  .ui-dialog .ui-dialog-buttonpane {
-    text-align: center;
-  }
-  
-  .ui-dialog-titlebar {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 10px 10px 0 0;
-  }
-  
-  .ui-dialog {
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  }
-  
-  /* Tooltipster theme */
-  .tooltipster-light {
-    background: #f5f5f5;
-    border: 1px solid #ccc;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+
+  .container-fluid {
     padding: 10px;
-    border-radius: 5px;
   }
-  
+
+  h1.h2 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .fc-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .fc-toolbar-title {
+    font-size: 1rem;
+    margin-bottom: 10px;
+  }
+
+  .fc-button-group {
+    margin-bottom: 10px;
+  }
+
+  .fc-button {
+    font-size: 0.625rem;
+    padding: 2px 4px;
+  }
+
+  .fc-daygrid-day {
+    padding: 1px;
+  }
+
+  .fc-event {
+    font-size: 0.625rem;
+    padding: 1px 2px;
+  }
+
+  .container-fluid {
+    padding: 5px;
+  }
+
+  h1.h2 {
+    font-size: 1.25rem;
+  }
+}
+

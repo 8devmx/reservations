@@ -9,26 +9,26 @@ if ($post) {
       $events->getAllData($post['query'] ?? '');
       break;
     case 'insert':
-      $events = new Events();
       $events->insertData($post);
       break;
     case 'delete':
-      $events = new Events();
       $events->deleteData($post);
       break;
     case 'selectOne':
-      $events = new Events();
       $events->getOneData($post);
       break;
     case 'update':
-      $events = new Events();
       $events->updateData($post);
       break;
     case 'filtroData':
       $events->filtroData($post['client_id']);
       break;
+    case 'addEvent':
+      $events->addEvent($post);
+      break;
   }
 }
+
 class Events
 {
   public function getAllData($query = '')
@@ -166,9 +166,9 @@ class Events
   }
 
   public function filtroData($client_id)
-{
-  global $mysqli;
-  $query = "SELECT 
+  {
+    global $mysqli;
+    $query = "SELECT 
           events.id, 
           events.title as title, 
           events.description, 
@@ -186,25 +186,40 @@ class Events
       LEFT JOIN clients on events.client_id = clients.id
       LEFT JOIN users on events.user_id = users.id
       WHERE events.client_id = '$client_id'";
-       $result = $mysqli->query($query);
-       $data = [];
-       while ($row = $result->fetch_object()) {
-        $data[] = $row;
-      }
-      echo json_encode($data);
+    $result = $mysqli->query($query);
+    $data = [];
+    while ($row = $result->fetch_object()) {
+      $data[] = $row;
     }
+    echo json_encode($data);
+  }
 
   public function getClients()
-{
-  global $mysqli;
-  $query = "SELECT id, name FROM clients WHERE active = 1";
-  $result = $mysqli->query($query);
-  $clients = [];
-  while ($row = $result->fetch_object()) {
-    $clients[] = $row;
+  {
+    global $mysqli;
+    $query = "SELECT id, name FROM clients WHERE active = 1";
+    $result = $mysqli->query($query);
+    $clients = [];
+    while ($row = $result->fetch_object()) {
+      $clients[] = $row;
+    }
+    return $clients;
   }
-  return $clients;
-}
 
+  public function addEvent($data)
+  {
+    global $mysqli;
+    $title = $data['title'];
+    $start_date = $data['start_date'];
+    $end_date = $data['end_date'];
+
+    $query = "INSERT INTO events (title, start_date, end_date) VALUES ('$title', '$start_date', '$end_date')";
+
+    if ($mysqli->query($query) === TRUE) {
+        echo "New record created successfully";
+    } else {
+        echo "Error: " . $query . "<br>" . $mysqli->error;
+    }
+  }
 }
 ?>
