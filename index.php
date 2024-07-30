@@ -137,33 +137,6 @@
                                 return;
                             }
 
-<<<<<<< Updated upstream
-                            return {
-                                title,
-                                startDate,
-                                endDate
-                            };
-                        }
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            const {
-                                title,
-                                startDate,
-                                endDate
-                            } = result.value;
-
-                            fetch('includes/events.php', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify({
-                                        action: 'insert',
-                                        title: title,
-                                        start_date: startDate,
-                                        end_date: endDate
-                                    })
-=======
                             return { title, description, startDate, endDate, startHout, endHour, client, user, map };
                         }
                     }).then((result) => {
@@ -187,20 +160,20 @@
                                     user: user,
                                     map: map,
                                     status: 1
->>>>>>> Stashed changes
                                 })
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (data.status === 2) {
-                                        Swal.fire('Éxito', data.message, 'success');
-                                    } else {
-                                        Swal.fire('Error', data.message, 'error');
-                                    }
-                                })
-                                .catch(error => {
-                                    console.error('Error:', error);
-                                    Swal.fire('Error', 'No se pudo registrar el evento', 'error');
-                                });
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.status === 2) {
+                                    Swal.fire('Éxito', data.message, 'success');
+                                } else {
+                                    Swal.fire('Error', data.message, 'error');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                Swal.fire('Error', 'No se pudo registrar el evento', 'error');
+                            });
                         }
                     });
                 }
