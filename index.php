@@ -1,38 +1,73 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
 <link rel="stylesheet" href="css/styles.css">
-
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <title>Calendario</title>
     <?php
-    include_once 'includes/head.php';
-    require_once 'includes/events.php';
+      include_once 'includes/head.php';
+      require_once 'includes/events.php';
     ?>
     <!-- Bootstrap CSS v5.2.1 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
-
+    <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/locales-all.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- Incluir SweetAlert -->
-
-    <style>
-        #calendar {
-            max-width: 100%;
-            height: 800px;
-            margin: auto;
-        }
-    </style>
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 
 <body>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const calendarEl = document.getElementById('calendar');
-            const calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                locale: 'es',
-                headerToolbar: {
+<?php include_once 'includes/header.php'; ?>
+<div class="container-fluid">
+    <div class="row">
+        <h1 class="h2">Dashboard</h1>
+    </div>
+    <div id='calendar'></div>
+</div>
+
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    const getAllData = () => {
+        const obj = {
+            action: 'showData'
+        }
+
+        fetch('includes/events.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(obj)
+        })
+        .then(response => response.json())
+        .then(json => {
+            let eventsArray = [];
+            json.forEach((row, index) => {
+                const event = {
+                    id: row.id,
+                    start: row.start_date,
+                    end: row.end_date,
+                    title: row.title,
+                }
+                eventsArray.push(event);
+            });
+            sessionStorage.setItem('events', JSON.stringify(eventsArray));
+        });
+    }
+
+    getAllData();
+    const allEvents = JSON.parse(sessionStorage.getItem('events'));
+    console.log(allEvents);
+    const calendarEl = document.querySelector('#calendar');
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'es',
+        headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
@@ -45,122 +80,84 @@
                         }
                     }
                 },
-                events: function(fetchInfo, successCallback, failureCallback) {
-                    fetch('includes/events.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ action: 'showData' })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            let events = data.map(event => ({
-                                id: event.id,
-                                title: event.title,
-                                start: event.start_date + 'T' + event.start_hout,
-                                end: event.end_date + 'T' + event.end_hour,
-                                description: event.description
-                            }));
-                            successCallback(events);
-                        })
-                        .catch(error => {
-                            console.error('Error fetching events:', error);
-                            failureCallback(error);
-                        });
-                },
-                eventClick: function(info) {
-                    const startTime = new Date(info.event.start).toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit'
+        dateClick: function(info) {
+            Swal.fire({
+                title: 'Crear Nuevo Evento',
+                html: `
+                    <form id="eventForm">
+                        <div class="form-group">
+                            <label for="title">Titulo:</label>
+                            <input type="text" class="form-control" id="title" name="title" placeholder="Ingresa el Titulo">
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Descripción:</label>
+                            <textarea class="form-control" id="description" name="description" placeholder="Descripción del evento"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="start_time">Hora de Inicio:</label>
+                            <input type="time" class="form-control" id="start_time" name="start_time">
+                        </div>
+                        <div class="form-group">
+                            <label for="end_time">Hora de Fin:</label>
+                            <input type="time" class="form-control" id="end_time" name="end_time">
+                        </div>
+                        <div class="form-group">
+                            <label for="client">Cliente:</label>
+                            <select class="form-control" id="client" name="client">
+                                <?php
+                                require_once 'includes/Clients.php';
+                                $clientes = new Clients();
+                                $data = $clientes->getClientsForEvents();
+                                foreach ($data as $key => $value) {
+                                ?>
+                                <option value="<?php echo $value['id']; ?>"><?php echo $value['name']; ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="user">Usuario:</label>
+                            <select class="form-control" id="user" name="user">
+                                <?php
+                                require_once 'includes/Users.php';
+                                $usuarios = new User();
+                                $data = $usuarios->getUserForEvents();
+                                foreach ($data as $key => $value) {
+                                ?>
+                                <option value="<?php echo $value['id']; ?>"><?php echo $value['name']; ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="map">URL del Mapa:</label>
+                            <input type="url" class="form-control" id="map" name="map" placeholder="Lugar del Evento en Formato URL">
+                        </div>
+                    </form>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Guardar',
+                cancelButtonText: 'Cancelar',
+                preConfirm: () => {
+                    const form = Swal.getPopup().querySelector('#eventForm');
+                    const formData = new FormData(form);
+                    const eventData = {};
+                    formData.forEach((value, key) => {
+                        eventData[key] = value;
                     });
-                    const endTime = new Date(info.event.end).toLocaleTimeString([], {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                    });
-                    Swal.fire({
-                        title: 'Recuerda que',
-                        text: `Tiene una reservación hecha para ${info.event.title} desde ${startTime} hasta ${endTime}.`,
-                        icon: 'info',
-                        confirmButtonText: 'OK'
-                    });
-                },
-                dateClick: function(info) {
-                    Swal.fire({
-                        title: 'Agregar Evento',
-                        html: `
-                            <form id="eventForm">
-                                <label for="title">Título:</label>
-                                <input type="text" id="title" name="title" class="swal2-input" required>
-                                <label for="start_date">Fecha de inicio:</label>
-                                <input type="date" id="start_date" name="start_date" class="swal2-input" value="${info.dateStr}" required>
-                                <label for="end_date">Fecha de fin:</label>
-                                <input type="date" id="end_date" name="end_date" class="swal2-input" required>
-                            </form>
-                        `,
-                        focusConfirm: false,
-                        preConfirm: () => {
-                            const title = Swal.getPopup().querySelector('#title').value;
-                            const startDate = Swal.getPopup().querySelector('#start_date').value;
-                            const endDate = Swal.getPopup().querySelector('#end_date').value;
-
-                            if (!title || !startDate || !endDate) {
-                                Swal.showValidationMessage(`Por favor, completa todos los campos`);
-                                return;
-                            }
-
-                            return { title, startDate, endDate };
-                        }
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            const { title, startDate, endDate } = result.value;
-                            
-                            fetch('includes/events.php', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({
-                                    action: 'insert',
-                                    title: title,
-                                    start_date: startDate,
-                                    end_date: endDate
-                                })
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.status === 2) {
-                                    Swal.fire('Éxito', data.message, 'success');
-                                } else {
-                                    Swal.fire('Error', data.message, 'error');
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                Swal.fire('Error', 'No se pudo registrar el evento', 'error');
-                            });
-                        }
-                    });
+                    return eventData;
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const eventData = result.value;
+                    console.log(eventData);
+                    // Aquí puedes agregar la lógica para enviar los datos del evento al servidor
                 }
             });
-            calendar.render();
-        });
-    </script>
-    <?php include_once 'includes/header.php'; ?>
-    <div class="container-fluid">
-        <div class="row">
-            <main class="col-md-12 ms-sm-auto col-lg-12 px-md-4" id="viewData">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Dashboard</h1>
-                </div>
-                <div id='calendar'></div>
-            </main>
-        </div>
-    </div>
-
-    <!-- Bootstrap JavaScript Libraries -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8O"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9b73iZFl+PH0sBqAzZXO5JJ2cSeF2MiRlz4dA8R0I42B1h8D1mN8rFA"></script>
+            console.log(info);
+        },
+        events: allEvents
+    });
+    calendar.render();
+});
+</script>
 </body>
-
 </html>
