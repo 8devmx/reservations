@@ -26,6 +26,12 @@ if ($post) {
     case 'addEvent':
       $events->addEvent($post);
       break;
+    case 'getClients':
+      $events->getClients();
+      break;
+    case 'getUsers':
+      $events->getUsers();
+      break;
   }
 }
 
@@ -38,7 +44,7 @@ class Events
     if (!empty($query)) {
       $searchQuery = "WHERE events.title LIKE '%$query%'";
     }
-    $query = "SELECT events.id, events.title as title, events.description, events.start_date, events.start_hout, events.end_date, events.end_hour, events.map, events.client_id, events.user_id, events.active, clients.name as client, users.name as user FROM events LEFT JOIN clients on events.client_id = clients.id LEFT JOIN users on events.user_id = users.id $searchQuery";
+    $query = "SELECT events.id, events.title as title, events.description, events.start_date, events.end_date, events.map, events.client_id, events.user_id, events.active, clients.name as client, users.name as user FROM events LEFT JOIN clients on events.client_id = clients.id LEFT JOIN users on events.user_id = users.id $searchQuery";
     $data = [];
     $result = $mysqli->query($query);
     while ($row = $result->fetch_object()) {
@@ -61,25 +67,14 @@ class Events
     $title = $post['title'];
     $description = $post['description'];
     $start_date = $post['start_date'];
-    $start_hout = $post['start_hout'];
     $end_date = $post['end_date'];
-    $end_hour = $post['end_hour'];
     $client = $post['client'];
     $user = $post['user'];
     $map = $post['map'];
     $status = $post['status'];
     $id = $post['id'];
 
-    if (empty($title) || empty($description) || empty($start_date) || empty($start_hout) || empty($end_date) || empty($end_hour) || empty($map)) {
-      $response = [
-          "message" => "Todos los campos son obligatorios.",
-          "status" => 1
-      ];
-      echo json_encode($response);
-      return;
-  }
-
-    $query = "UPDATE IGNORE events SET title = '$title', description = '$description', start_date = '$start_date', start_hout = '$start_hout', end_date = '$end_date', end_hour = '$end_hour',  client_id = '$client', user_id = '$user', map = '$map', active = '$status' WHERE id = $id";
+    $query = "UPDATE events SET title = '$title', description = '$description', start_date = '$start_date', end_date = '$end_date', client_id = '$client', user_id = '$user', map = '$map', active = '$status' WHERE id = $id";
 
     global $mysqli;
     $mysqli->query($query);
@@ -108,24 +103,13 @@ class Events
     $Titulo = $data['title'];
     $Descripcion = $data['description'];
     $Fecha_de_Inicio = $data['start_date'];
-    $Hora_de_Inicio = $data['start_hout'];
     $Fecha_de_Fin = $data['end_date'];
-    $Hora_de_Fin = $data['end_hour'];
     $Cliente = $data['client'];
     $Usuario = $data['user'];
     $Mapa = $data['map'];
     $status = $data['status'];
 
-    if (empty($Titulo) || empty($Descripcion) || empty($Fecha_de_Inicio) || empty($Hora_de_Inicio) || empty($Fecha_de_Fin) || empty($Hora_de_Fin) || empty($Mapa)) {
-      $response = [
-          "message" => "Todos los campos son obligatorios.",
-          "status" => 1
-      ];
-      echo json_encode($response);
-      return;
-  }
-    
-    $query =  "INSERT IGNORE INTO events (title, description, start_date, start_hout, end_date, end_hour, client_id, user_id, map, active) VALUES ('$Titulo', '$Descripcion', '$Fecha_de_Inicio', '$Hora_de_Inicio','$Fecha_de_Fin','$Hora_de_Fin','$Cliente','$Usuario','$Mapa','$status')";
+    $query =  "INSERT INTO events (title, description, start_date, end_date, client_id, user_id, map, active) VALUES ('$Titulo', '$Descripcion', '$Fecha_de_Inicio','$Fecha_de_Fin','$Cliente','$Usuario','$Mapa','$status')";
     $mysqli->query($query);
     
     $response = [
@@ -134,6 +118,7 @@ class Events
     ];
     if ($mysqli->insert_id != 0) {
       $response = [
+        "id" => $mysqli->insert_id,
         "message" => "Se registró correctamente el Evento de " . $Titulo,
         "status" => 2
       ];
@@ -173,9 +158,7 @@ class Events
           events.title as title, 
           events.description, 
           events.start_date, 
-          events.start_hout, 
           events.end_date, 
-          events.end_hour, 
           events.map, 
           events.client_id, 
           events.user_id, 
@@ -203,7 +186,19 @@ class Events
     while ($row = $result->fetch_object()) {
       $clients[] = $row;
     }
-    return $clients;
+    echo json_encode($clients);
+  }
+
+  public function getUsers()
+  {
+    global $mysqli;
+    $query = "SELECT id, name FROM users WHERE active = 1";
+    $result = $mysqli->query($query);
+    $users = [];
+    while ($row = $result->fetch_object()) {
+      $users[] = $row;
+    }
+    echo json_encode($users);
   }
 
   public function addEvent($data)
@@ -212,14 +207,25 @@ class Events
     $title = $data['title'];
     $start_date = $data['start_date'];
     $end_date = $data['end_date'];
+    $description = $data['description'];
+    $client = $data['client'];
+    $user = $data['user'];
+    $map = $data['map'];
+    $status = $data['status'];
 
-    $query = "INSERT INTO events (title, start_date, end_date) VALUES ('$title', '$start_date', '$end_date')";
+    $query = "INSERT INTO events (title, start_date, end_date, description, client_id, user_id, map, active) VALUES ('$title', '$start_date', '$end_date', '$description', '$client', '$user', '$map', '$status')";
 
     if ($mysqli->query($query) === TRUE) {
-        echo "New record created successfully";
+        echo json_encode([
+          "id" => $mysqli->insert_id,
+          "message" => "New record created successfully"
+        ]);
     } else {
-        echo "Error: " . $query . "<br>" . $mysqli->error;
+        echo json_encode([
+          "message" => "Error: " . $query . "<br>" . $mysqli->error
+        ]);
     }
   }
 }
 ?>
+
