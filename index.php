@@ -15,6 +15,12 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/locales-all.js"></script>
     <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+    .swal2-popup .form-group {
+        text-align: left !important;
+        margin-bottom: 10px;
+    }
+</style>
 </head>
 
 <body>
@@ -153,7 +159,23 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             console.log(info);
         },
-        events: allEvents
+        events: allEvents,
+        eventClick: function(info) {
+            const startTime = new Date(info.event.start).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            const endTime = new Date(info.event.end).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            Swal.fire({
+                title: 'Recuerda que',
+                text: `Tiene una reservación hecha para ${info.event.title} desde ${startTime} hasta ${endTime}.`,
+                icon: 'info',
+                confirmButtonText: 'OK'
+            });
+        }
     });
     calendar.render();
 });
