@@ -105,17 +105,27 @@
                                 <label for="end_hour">Hora de fin:</label>
                                 <input type="time" id="end_hour" name="end_hour" class="swal2-input" required>
                                 <label for="client">Cliente:</label>
-                                <select id="client" name="client" class="swal2-input">
-                                    <option value="1">Cliente 1</option>
-                                    <option value="2">Cliente 2</option>
-                                    <option value="3">Cliente 3</option>
+                                <select class="form-control" id="client" name="client">
+                                    <?php
+                                    require_once 'includes/Clients.php';
+                                    $clientes = new Clients();
+                                    $data = $clientes->getClientsForEvents();
+                                    foreach ($data as $key => $value) {
+                                    ?>
+                                    <option value="<?php echo $value['id']; ?>"><?php echo $value['name']; ?></option>
+                                    <?php } ?>
                                 </select>
                                 <label for="user">Usuario:</label>
-                                <select id="user" name="user" class="swal2-input">
-                                    <option value="1">Usuario 1</option>
-                                    <option value="2">Usuario 2</option>
-                                    <option value="3">Usuario 3</option>
-                                </select>
+                                <select class="form-control" id="user" name="user">
+                                    <?php
+                                    require_once 'includes/Users.php';
+                                    $usuarios = new User();
+                                    $data = $usuarios->getUserForEvents();
+                                    foreach ($data as $key => $value) {
+                                    ?>
+                                    <option value="<?php echo $value['id']; ?>"><?php echo $value['name']; ?></option>
+                                    <?php } ?>
+                            </select>
                                 <label for="map">Mapa:</label>
                                 <input type="text" id="map" name="map" class="swal2-input" placeholder="URL del mapa">
                             </form>

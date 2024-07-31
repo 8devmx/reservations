@@ -21,7 +21,6 @@
     transition: width 0.3s ease; /* Transición suave de ancho */
   }
 
-<<<<<<< Updated upstream
   .h2 {
     text-align: center;
     font-family: 'Times New Roman', Times, serif;
@@ -30,38 +29,3 @@
   #calendar {
     font-family: 'Times New Roman', Times, serif;
   }
-=======
-  /* css/styles.css */
-
-/* Asegúrate de que el contenedor del formulario esté centrado */
-.swal2-popup {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-/* Estilos para el formulario */
-#eventForm {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 100%;
-  max-width: 400px;
-  margin: auto;
-}
-
-#eventForm label {
-  font-weight: bold;
-}
-
-#eventForm input, 
-#eventForm textarea, 
-#eventForm select {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  box-sizing: border-box;
-}
->>>>>>> Stashed changes
