@@ -41,7 +41,10 @@
                     timeGrid: {
                         slotLabelFormat: {
                             hour: 'numeric',
+<<<<<<< Updated upstream
                             hour12: true // Esta opción asegura que se usen AM y PM
+=======
+>>>>>>> Stashed changes
                         }
                     }
                 },
@@ -51,7 +54,13 @@
                             headers: {
                                 'Content-Type': 'application/json'
                             },
+<<<<<<< Updated upstream
                             body: JSON.stringify({ action: 'showData' })
+=======
+                            body: JSON.stringify({
+                                action: 'showData'
+                            })
+>>>>>>> Stashed changes
                         })
                         .then(response => response.json())
                         .then(data => {
@@ -86,6 +95,7 @@
                     });
                 },
                 dateClick: function(info) {
+<<<<<<< Updated upstream
                     Swal.fire({
                         title: 'Agregar Evento',
                         html: `
@@ -105,10 +115,128 @@
                             const endDate = Swal.getPopup().querySelector('#end_date').value;
 
                             if (!title || !startDate || !endDate) {
+=======
+                    function loadClients() {
+                        return fetch('includes/events.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ action: 'getClients' })
+                        })
+                        .then(response => response.json())
+                        .then(clients => {
+                            let clientOptions = clients.map(client => `<option value="${client.id}">${client.name}</option>`);
+                            document.getElementById('client_id').innerHTML = clientOptions.join('');
+                        })
+                        .catch(error => console.error('Error fetching clients:', error));
+                    }
+
+                    function loadUsers() {
+                        return fetch('includes/events.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ action: 'getUsers' })
+                        })
+                        .then(response => response.json())
+                        .then(users => {
+                            let userOptions = users.map(user => `<option value="${user.id}">${user.name}</option>`);
+                            document.getElementById('user_id').innerHTML = userOptions.join('');
+                        })
+                        .catch(error => console.error('Error fetching users:', error));
+                    }
+
+                    Swal.fire({
+                        title: 'Agregar Evento',
+                        html: `
+        <form id="eventForm">
+            <div class="container" style="max-width: 800px; margin: auto;">
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label for="title">Título:</label>
+                        <input type="text" id="title" name="title" class="form-control swal2-input" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label for="description">Descripción:</label>
+                        <textarea id="description" name="description" class="form-control swal2-input" rows="3" required></textarea>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label for="start_date">Fecha de inicio:</label>
+                        <input type="date" id="start_date" name="start_date" class="form-control swal2-input" value="${info.dateStr}" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label for="end_date">Fecha de fin:</label>
+                        <input type="date" id="end_date" name="end_date" class="form-control swal2-input" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label for="client_id">Clientes:</label>
+                        <select name="client" id="client" class="form-control swal2-input">
+                            <option value="" selected>Seleccione una Opción</option>
+                            <?php 
+                            require_once "includes/Clients.php";
+                            $clientes = new Clients();
+                            $data = $clientes->getClientsForEvents();
+                            foreach ($data as $key => $value) {
+                            ?> 
+                            <option value="<?php echo $value['id']; ?>"><?php echo $value['name']; ?></option>
+                            <?php
+                            }
+                            ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label for="user_id">Usuarios:</label>
+                        <select name="user" id="user" class="form-control swal2-input">
+                            <option value="" selected>Seleccione una Opción</option>
+                            <?php 
+                            require_once "includes/Users.php";
+                            $usuario = new User();
+                            $data = $usuario->getUserForEvents();
+                            foreach ($data as $key => $value) {
+                            ?> 
+                            <option value="<?php echo $value['id']; ?>"><?php echo $value['name']; ?></option>
+                            <?php
+                            }
+                            ?>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+        `,
+                        focusConfirm: false,
+                        didOpen: () => {
+                            // Cargar clientes y usuarios después de abrir el modal
+                            loadClients();
+                            loadUsers();
+                        },
+                        preConfirm: () => {
+                            const title = Swal.getPopup().querySelector('#title').value;
+                            const description = Swal.getPopup().querySelector('#description').value;
+                            const startDate = Swal.getPopup().querySelector('#start_date').value;
+                            const endDate = Swal.getPopup().querySelector('#end_date').value;
+                            const client_id = Swal.getPopup().querySelector('#client').value;
+                            const user_id = Swal.getPopup().querySelector('#user').value;
+
+                            if (!title || !description || !startDate || !endDate || !client_id || !user_id) {
+>>>>>>> Stashed changes
                                 Swal.showValidationMessage(`Por favor, completa todos los campos`);
                                 return;
                             }
 
+<<<<<<< Updated upstream
                             return { title, startDate, endDate };
                         }
                     }).then((result) => {
@@ -139,6 +267,58 @@
                                 console.error('Error:', error);
                                 Swal.fire('Error', 'No se pudo registrar el evento', 'error');
                             });
+=======
+                            return {
+                                title,
+                                description,
+                                startDate,
+                                endDate,
+                                client_id,
+                                user_id
+                            };
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const {
+                                title,
+                                description,
+                                startDate,
+                                endDate,
+                                client_id,
+                                user_id
+                            } = result.value;
+
+                            fetch('includes/events.php', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        action: 'insert',
+                                        title: title,
+                                        description: description,
+                                        start_date: startDate,
+                                        start_hout: "00:00:00",
+                                        end_date: endDate,
+                                        end_hour: "00:00:00",
+                                        client_id: client_id,
+                                        user_id: user_id,
+                                        status: 1
+                                    })
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.status === 2) {
+                                        Swal.fire('Éxito', data.message, 'success');
+                                    } else {
+                                        Swal.fire('Error', data.message, 'error');
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    Swal.fire('Error', 'No se pudo registrar el evento', 'error');
+                                });
+>>>>>>> Stashed changes
                         }
                     });
                 }
@@ -159,8 +339,14 @@
     </div>
 
     <!-- Bootstrap JavaScript Libraries -->
+<<<<<<< Updated upstream
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8O"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9b73iZFl+PH0sBqAzZXO5JJ2cSeF2MiRlz4dA8R0I42B1h8D1mN8rFA"></script>
 </body>
 
+=======
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+</body>
+>>>>>>> Stashed changes
 </html>

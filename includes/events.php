@@ -9,19 +9,15 @@ if ($post) {
       $events->getAllData($post['query'] ?? '');
       break;
     case 'insert':
-      $events = new Events();
       $events->insertData($post);
       break;
     case 'delete':
-      $events = new Events();
       $events->deleteData($post);
       break;
     case 'selectOne':
-      $events = new Events();
       $events->getOneData($post);
       break;
     case 'update':
-      $events = new Events();
       $events->updateData($post);
       break;
     case 'filtroData':
@@ -39,7 +35,7 @@ class Events
     if (!empty($query)) {
       $searchQuery = "WHERE events.title LIKE '%$query%'";
     }
-    $query = "SELECT events.id, events.title as title, events.description, events.start_date, events.start_hout, events.end_date, events.end_hour, events.map, events.client_id, events.user_id, events.active, clients.name as client, users.name as user FROM events LEFT JOIN clients on events.client_id = clients.id LEFT JOIN users on events.user_id = users.id $searchQuery";
+    $query = "SELECT events.id, events.title as title, events.description, events.start_date, events.start_hout, events.end_date, events.end_hour, events.client_id, events.user_id, events.active, clients.name as client, users.name as user FROM events LEFT JOIN clients on events.client_id = clients.id LEFT JOIN users on events.user_id = users.id $searchQuery";
     $data = [];
     $result = $mysqli->query($query);
     while ($row = $result->fetch_object()) {
@@ -59,19 +55,19 @@ class Events
 
   public function updateData($post)
   {
+    global $mysqli;
+    $id = $post['id'];
     $title = $post['title'];
     $description = $post['description'];
     $start_date = $post['start_date'];
     $start_hout = $post['start_hout'];
     $end_date = $post['end_date'];
     $end_hour = $post['end_hour'];
-    $client = $post['client'];
-    $user = $post['user'];
-    $map = $post['map'];
+    $client_id = $post['client_id'];
+    $user_id = $post['user_id'];
     $status = $post['status'];
-    $id = $post['id'];
 
-    if (empty($title) || empty($description) || empty($start_date) || empty($start_hout) || empty($end_date) || empty($end_hour) || empty($map)) {
+    if (empty($title) || empty($description) || empty($start_date) || empty($start_hout) || empty($end_date) || empty($end_hour)) {
       $response = [
         "message" => "Todos los campos son obligatorios.",
         "status" => 1
@@ -80,9 +76,8 @@ class Events
       return;
     }
 
-    $query = "UPDATE IGNORE events SET title = '$title', description = '$description', start_date = '$start_date', start_hout = '$start_hout', end_date = '$end_date', end_hour = '$end_hour',  client_id = '$client', user_id = '$user', map = '$map', active = '$status' WHERE id = $id";
+    $query = "UPDATE events SET title = '$title', description = '$description', start_date = '$start_date', start_hout = '$start_hout', end_date = '$end_date', end_hour = '$end_hour', client_id = '$client_id', user_id = '$user_id', active = '$status' WHERE id = $id";
 
-    global $mysqli;
     $mysqli->query($query);
 
     $response = [
@@ -94,11 +89,6 @@ class Events
         "message" => "Se editó correctamente el Evento de " . $title,
         "status" => 2
       ];
-    } else {
-      $response = [
-        "message" => "El Titulo ya está registrado, no se ha insertado un nuevo registro",
-        "status" => 1
-      ];
     }
     echo json_encode($response);
   }
@@ -106,18 +96,17 @@ class Events
   public function insertData($data)
   {
     global $mysqli;
-    $Titulo = $data['title'];
-    $Descripcion = $data['description'];
-    $Fecha_de_Inicio = $data['start_date'];
-    $Hora_de_Inicio = $data['start_hout'];
-    $Fecha_de_Fin = $data['end_date'];
-    $Hora_de_Fin = $data['end_hour'];
-    $Cliente = $data['client'];
-    $Usuario = $data['user'];
-    $Mapa = $data['map'];
+    $title = $data['title'];
+    $description = $data['description'];
+    $start_date = $data['start_date'];
+    $start_hout = "00:00:00"; // Cambiar si se requiere un valor diferente
+    $end_date = $data['end_date'];
+    $end_hour = "00:00:00"; // Cambiar si se requiere un valor diferente
+    $client_id = $data['client_id'];
+    $user_id = $data['user_id'];
     $status = $data['status'];
 
-    if (empty($Titulo) || empty($Descripcion) || empty($Fecha_de_Inicio) || empty($Hora_de_Inicio) || empty($Fecha_de_Fin) || empty($Hora_de_Fin) || empty($Mapa)) {
+    if (empty($title) || empty($description) || empty($start_date) || empty($end_date)) {
       $response = [
         "message" => "Todos los campos son obligatorios.",
         "status" => 1
@@ -126,7 +115,7 @@ class Events
       return;
     }
 
-    $query =  "INSERT IGNORE INTO events (title, description, start_date, start_hout, end_date, end_hour, client_id, user_id, map, active) VALUES ('$Titulo', '$Descripcion', '$Fecha_de_Inicio', '$Hora_de_Inicio','$Fecha_de_Fin','$Hora_de_Fin','$Cliente','$Usuario','$Mapa','$status')";
+    $query = "INSERT INTO events (title, description, start_date, start_hout, end_date, end_hour, client_id, user_id, active) VALUES ('$title', '$description', '$start_date', '$start_hout', '$end_date', '$end_hour', '$client_id', '$user_id', '$status')";
     $mysqli->query($query);
 
     $response = [
@@ -135,13 +124,8 @@ class Events
     ];
     if ($mysqli->insert_id != 0) {
       $response = [
-        "message" => "Se registró correctamente el Evento de " . $Titulo,
+        "message" => "Se registró correctamente el Evento de " . $title,
         "status" => 2
-      ];
-    } else {
-      $response = [
-        "message" => "El Titulo ya está registrado, no se ha insertado un nuevo registro",
-        "status" => 1
       ];
     }
     echo json_encode($response);
@@ -151,7 +135,7 @@ class Events
   {
     global $mysqli;
     $id = $data['id'];
-    $query = "DELETE FROM events where id =  $id";
+    $query = "DELETE FROM events WHERE id =  $id";
     $response = [
       "message" => "No se pudo eliminar el registro en la base de datos",
       "status" => 0
