@@ -86,16 +86,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     title: '<h2 style="font-family: Arial, sans-serif; font-weight: bold;">AGREGAR EVENTO</h2>',
                     html: `
+                    <div class="container-fluid">
                         <form id="swal-form" class="swal-form">
-                            <div class="form-group"><label for="swal-title">Título:</label><input type="text" id="swal-title" class="swal2-input" required></div>
-                            <div class="form-group"><label for="swal-start">Fecha de inicio:</label><input type="datetime-local" id="swal-start" class="swal2-input" required></div>
-                            <div class="form-group"><label for="swal-end">Fecha de fin:</label><input type="datetime-local" id="swal-end" class="swal2-input"></div>
-                            <div class="form-group"><label for="swal-description">Descripción:</label><textarea id="swal-description" class="swal2-textarea"></textarea></div>
-                            <div class="form-group"><label for="swal-client">Cliente:</label><select id="swal-client" class="swal2-input" required>${clientOptions}</select></div>
-                            <div class="form-group"><label for="swal-user">Usuario:</label><select id="swal-user" class="swal2-input" required>${userOptions}</select></div>
-                            <div class="form-group"><label for="swal-map">Mapa:</label><input type="text" id="swal-map" class="swal2-input" required></div>
-                            <div class="form-group"><label for="swal-status">Estado:</label><select id="swal-status" class="swal2-input" required><option value="1">Activo</option><option value="0">Inactivo</option></select></div>
+                            <div class="form-group"><label for="swal-title">Título:</label><input type="text" id="swal-title" class="form-control" required></div>
+                            <div class="form-group"><label for="swal-start">Fecha de inicio:</label><input type="datetime-local" id="swal-start" class="form-control" required></div>
+                            <div class="form-group"><label for="swal-end">Fecha de fin:</label><input type="datetime-local" id="swal-end" class="form-control"></div>
+                            <div class="form-group"><label for="swal-description">Descripción:</label><textarea id="swal-description" class="form-control"></textarea></div>
+                            <div class="form-group"><label for="swal-client">Cliente:</label><select id="swal-client" class="form-control" required>${clientOptions}</select></div>
+                            <div class="form-group"><label for="swal-user">Usuario:</label><select id="swal-user" class="form-control" required>${userOptions}</select></div>
+                            <div class="form-group"><label for="swal-map">Mapa:</label><input type="text" id="swal-map" class="form-control" required></div>
+                            <div class="form-group"><label for="swal-status">Estado:</label><select id="swal-status" class="form-control" required><option value="1">Activo</option><option value="0">Inactivo</option></select></div>
                         </form>
+                    </div>
                     `,
                     customClass: {
                         popup: 'swal2-popup-custom'
@@ -188,6 +190,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     title: '<h2 style="font-family: Arial, sans-serif; font-weight: bold;">EDITAR EVENTO</h2>',
                     html: `
+                    <div class="container-fluid">
                         <form id="swal-form" class="swal-form">
                             <div class="form-group"><label for="swal-title">Título:</label><input type="text" id="swal-title" class="swal2-input" value="${event.title}" required></div>
                             <div class="form-group"><label for="swal-start">Fecha de inicio:</label><input type="datetime-local" id="swal-start" class="swal2-input" value="${event.start.toISOString().slice(0, 16)}" required></div>
@@ -198,6 +201,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="form-group"><label for="swal-map">Mapa:</label><input type="text" id="swal-map" class="swal2-input" value="${event.extendedProps.map}" required></div>
                             <div class="form-group"><label for="swal-status">Estado:</label><select id="swal-status" class="swal2-input" required><option value="1" ${event.extendedProps.status == 1 ? 'selected' : ''}>Activo</option><option value="0" ${event.extendedProps.status == 0 ? 'selected' : ''}>Inactivo</option></select></div>
                         </form>
+                        </div>
                     `,
                     customClass: {
                         popup: 'swal2-popup-custom'
