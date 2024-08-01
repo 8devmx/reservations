@@ -176,6 +176,7 @@
                             .then(data => {
                                 if (data.status === 2) {
                                     Swal.fire('Éxito', data.message, 'success');
+                                    calendar.refetchEvents()
                                 } else {
                                     Swal.fire('Error', data.message, 'error');
                                 }
