@@ -9,19 +9,15 @@ if ($post) {
       $events->getAllData($post['query'] ?? '');
       break;
     case 'insert':
-      $events = new Events();
       $events->insertData($post);
       break;
     case 'delete':
-      $events = new Events();
       $events->deleteData($post);
       break;
     case 'selectOne':
-      $events = new Events();
       $events->getOneData($post);
       break;
     case 'update':
-      $events = new Events();
       $events->updateData($post);
       break;
     case 'filtroData':
@@ -204,6 +200,18 @@ class Events
     while ($row = $result->fetch_object()) {
       $clients[] = $row;
     }
-    return $clients;
+    echo json_encode($clients);
+  }
+
+  public function getUsers()
+  {
+    global $mysqli;
+    $query = "SELECT id, name FROM users WHERE active = 1";
+    $result = $mysqli->query($query);
+    $users = [];
+    while ($row = $result->fetch_object()) {
+      $users[] = $row;
+    }
+    echo json_encode($users);
   }
 }
