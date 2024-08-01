@@ -125,46 +125,74 @@
         <form id="eventForm">
             <div class="container" style="max-width: 800px; margin: auto;">
                 <div class="row mb-3">
-                    <div class="col-md-6">
+                    <div class="col-12">
                         <label for="title">Título:</label>
                         <input type="text" id="title" name="title" class="form-control swal2-input" required>
                     </div>
-                    <div class="col-md-6">
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
                         <label for="description">Descripción:</label>
                         <textarea id="description" name="description" class="form-control swal2-input" rows="3" required></textarea>
                     </div>
                 </div>
                 <div class="row mb-3">
-                    <div class="col-md-6">
+                    <div class="col-12">
                         <label for="start_date">Fecha de inicio:</label>
                         <input type="date" id="start_date" name="start_date" class="form-control swal2-input" value="${info.dateStr}" required>
                     </div>
-                    <div class="col-md-6">
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label for="start_time">Hora de inicio:</label>
+                        <input type="time" id="start_time" name="start_time" class="form-control swal2-input" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
                         <label for="end_date">Fecha de fin:</label>
                         <input type="date" id="end_date" name="end_date" class="form-control swal2-input" required>
                     </div>
                 </div>
                 <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="start_hout">Hora de inicio:</label>
-                        <input type="time" id="start_hout" name="start_hout" class="form-control swal2-input" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="end_hour">Hora de fin:</label>
-                        <input type="time" id="end_hour" name="end_hour" class="form-control swal2-input" required>
+                    <div class="col-12">
+                        <label for="end_time">Hora de fin:</label>
+                        <input type="time" id="end_time" name="end_time" class="form-control swal2-input" required>
                     </div>
                 </div>
                 <div class="row mb-3">
-                    <div class="col-md-6">
+                    <div class="col-12">
                         <label for="client_id">Clientes:</label>
-                        <select id="client_id" name="client_id" class="form-control swal2-input">
-                            <!-- Opciones de clientes serán cargadas dinámicamente -->
+                        <select name="client" id="client" class="form-control swal2-input">
+                            <option value="" selected>Seleccione una Opción</option>
+                            <?php 
+                            require_once "includes/Clients.php";
+                            $clientes = new Clients();
+                            $data = $clientes->getClientsForEvents();
+                            foreach ($data as $key => $value) {
+                            ?> 
+                            <option value="<?php echo $value['id']; ?>"><?php echo $value['name']; ?></option>
+                            <?php
+                            }
+                            ?>
                         </select>
                     </div>
-                    <div class="col-md-6">
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
                         <label for="user_id">Usuarios:</label>
-                        <select id="user_id" name="user_id" class="form-control swal2-input">
-                            <!-- Opciones de usuarios serán cargadas dinámicamente -->
+                        <select name="user" id="user" class="form-control swal2-input">
+                            <option value="" selected>Seleccione una Opción</option>
+                            <?php 
+                            require_once "includes/Users.php";
+                            $usuario = new User();
+                            $data = $usuario->getUserForEvents();
+                            foreach ($data as $key => $value) {
+                            ?> 
+                            <option value="<?php echo $value['id']; ?>"><?php echo $value['name']; ?></option>
+                            <?php
+                            }
+                            ?>
                         </select>
                     </div>
                 </div>
@@ -181,13 +209,13 @@
                             const title = Swal.getPopup().querySelector('#title').value;
                             const description = Swal.getPopup().querySelector('#description').value;
                             const startDate = Swal.getPopup().querySelector('#start_date').value;
+                            const startTime = Swal.getPopup().querySelector('#start_time').value;
                             const endDate = Swal.getPopup().querySelector('#end_date').value;
-                            const start_hout = Swal.getPopup().querySelector('#start_hout').value;
-                            const end_hour = Swal.getPopup().querySelector('#end_hour').value;
-                            const client_id = Swal.getPopup().querySelector('#client_id').value;
-                            const user_id = Swal.getPopup().querySelector('#user_id').value;
+                            const endTime = Swal.getPopup().querySelector('#end_time').value;
+                            const client_id = Swal.getPopup().querySelector('#client').value;
+                            const user_id = Swal.getPopup().querySelector('#user').value;
 
-                            if (!title || !description || !startDate || !endDate || !start_hout || !end_hour || !client_id || !user_id) {
+                            if (!title || !description || !startDate || !startTime || !endDate || !endTime || !client_id || !user_id) {
                                 Swal.showValidationMessage(`Por favor, completa todos los campos`);
                                 return;
                             }
@@ -196,9 +224,9 @@
                                 title,
                                 description,
                                 startDate,
+                                startTime,
                                 endDate,
-                                start_hout,
-                                end_hour,
+                                endTime,
                                 client_id,
                                 user_id
                             };
@@ -209,9 +237,9 @@
                                 title,
                                 description,
                                 startDate,
+                                startTime,
                                 endDate,
-                                start_hout,
-                                end_hour,
+                                endTime,
                                 client_id,
                                 user_id
                             } = result.value;
@@ -226,9 +254,9 @@
                                         title: title,
                                         description: description,
                                         start_date: startDate,
+                                        start_hout: startTime,
                                         end_date: endDate,
-                                        start_hout: start_hout,
-                                        end_hour: end_hour,
+                                        end_hour: endTime,
                                         client_id: client_id,
                                         user_id: user_id,
                                         status: 1
@@ -266,8 +294,7 @@
     </div>
 
     <!-- Bootstrap JavaScript Libraries -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8O"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9b73iZFl+PH0sBqAzZXO5JJ2cSeF2MiRlz4dA8R0I42B1h8D1mN8rFA"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
 </body>
-
 </html>
