@@ -57,18 +57,14 @@
                         })
                         .then(response => response.json())
                         .then(data => {
-                            if (Array.isArray(data)) {
-                                let events = data.map(event => ({
-                                    id: event.id,
-                                    title: event.title,
-                                    start: `${event.start_date}T${event.start_hout}`,
-                                    end: `${event.end_date}T${event.end_hour}`,
-                                    description: event.description
-                                }));
-                                successCallback(events);
-                            } else {
-                                failureCallback('Datos de eventos no válidos');
-                            }
+                            let events = data.map(event => ({
+                                id: event.id,
+                                title: event.title,
+                                start: event.start_date + 'T' + event.start_hout,
+                                end: event.end_date + 'T' + event.end_hour,
+                                description: event.description
+                            }));
+                            successCallback(events);
                         })
                         .catch(error => {
                             console.error('Error fetching events:', error);
@@ -86,7 +82,7 @@
                     });
                     Swal.fire({
                         title: 'Recuerda que',
-                        text: `Tiene una reservación hecha para ${info.event.title} desde ${startTime} hasta ${endTime}.`,
+                        text: Tiene una reservación hecha para ${info.event.title} desde ${startTime} hasta ${endTime}.,
                         icon: 'info',
                         confirmButtonText: 'OK'
                     });
@@ -94,7 +90,7 @@
                 dateClick: function(info) {
                     Swal.fire({
                         title: 'Agregar Evento',
-                        html: `
+                        html: 
                             <form id="eventForm">
                                 <label for="title">Título:</label>
                                 <input type="text" id="title" name="title" class="swal2-input" required>
@@ -123,36 +119,29 @@
                                 <label for="map">Mapa:</label>
                                 <input type="text" id="map" name="map" class="swal2-input" placeholder="URL del mapa">
                             </form>
-                        `,
+                        ,
                         focusConfirm: false,
                         preConfirm: () => {
                             const title = Swal.getPopup().querySelector('#title').value;
                             const description = Swal.getPopup().querySelector('#description').value;
-                            const startDateValue = Swal.getPopup().querySelector('#start_date').value;
-                            const endDateValue = Swal.getPopup().querySelector('#end_date').value;
+                            const startDate = Swal.getPopup().querySelector('#start_date').value;
+                            const endDate = Swal.getPopup().querySelector('#end_date').value;
                             const startHout = Swal.getPopup().querySelector('#start_hout').value;
                             const endHour = Swal.getPopup().querySelector('#end_hour').value;
                             const client = Swal.getPopup().querySelector('#client').value;
                             const user = Swal.getPopup().querySelector('#user').value;
                             const map = Swal.getPopup().querySelector('#map').value;
 
-                            if (!title || !description || !startDateValue || !endDateValue || !startHout || !endHour || !client || !user || !map) {
-                                Swal.showValidationMessage(`Por favor, completa todos los campos`);
+                            if (!title || !description || !startDate || !endDate || !startHout || !endHour || !client || !user || !map) {
+                                Swal.showValidationMessage(Por favor, completa todos los campos);
                                 return;
                             }
 
-                            const startDate = new Date(`${startDateValue}T${startHout}`);
-                            const endDate = new Date(`${endDateValue}T${endHour}`);
-                            if (endDate <= startDate) {
-                                Swal.showValidationMessage('La fecha de fin debe ser posterior a la fecha de inicio');
-                                return;
-                            }
-
-                            return { title, description, startDateValue, endDateValue, startHout, endHour, client, user, map };
+                            return { title, description, startDate, endDate, startHout, endHour, client, user, map };
                         }
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            const { title, description, startDateValue, endDateValue, startHout, endHour, client, user, map } = result.value;
+                            const { title, description, startDate, endDate, startHout, endHour, client, user, map } = result.value;
                             
                             fetch('includes/events.php', {
                                 method: 'POST',
@@ -163,8 +152,8 @@
                                     action: 'insert',
                                     title: title,
                                     description: description,
-                                    start_date: startDateValue,
-                                    end_date: endDateValue,
+                                    start_date: startDate,
+                                    end_date: endDate,
                                     start_hout: startHout,
                                     end_hour: endHour,
                                     client: client,
