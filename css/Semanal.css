@@ -1,0 +1,131 @@
+/* Semanal.css */
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f4f4f4;
+    overflow: hidden; /* Asegura que no haya scroll innecesario */
+}
+
+#calendar {
+    width: 100%;
+    height: 100vh; /* Ajusta la altura para caber en la pantalla */
+    background: #333; /* Fondo oscuro similar al ejemplo */
+    color: white; /* Texto blanco */
+    display: grid;
+    grid-template-rows: auto auto auto 1fr;
+    gap: 10px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    margin-bottom: 10px; /* Reducir margen para ajustar mejor */
+}
+
+.header button {
+    margin: 0 5px;
+    background: #555; /* Fondo oscuro para botones */
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.header button:hover {
+    background: #777;
+}
+
+.weekdays {
+    display: grid;
+    grid-template-columns: 50px repeat(7, 1fr);
+    border-bottom: 1px solid #444; /* Color de borde oscuro */
+    text-align: center;
+    font-weight: bold;
+    padding: 0 20px;
+}
+
+.weekdays div {
+    padding: 5px 0;
+}
+
+.weekdays .date {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.8em;
+    color: #aaa; /* Color de fecha */
+}
+
+.all-day-row {
+    display: grid;
+    grid-template-columns: 50px repeat(7, 1fr);
+    background: #444; /* Fondo oscuro para las celdas */
+    padding: 0 20px;
+}
+
+.all-day-row .time-label {
+    background: #333;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.all-day-slot {
+    background: #555;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8em; /* Ajustar tamaño de fuente para mejor visibilidad */
+    color: white;
+    border-bottom: 1px solid #444;
+}
+
+.time-slots {
+    display: grid;
+    grid-template-columns: 50px repeat(7, 1fr);
+    grid-auto-rows: minmax(40px, auto); /* Ajustar altura mínima */
+    gap: 1px;
+    background-color: #444; /* Fondo oscuro para las celdas */
+    overflow-y: auto; /* Permitir scroll si es necesario */
+    padding: 0 20px;
+}
+
+.time-slot {
+    background: #555;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8em; /* Ajustar tamaño de fuente para mejor visibilidad */
+    color: white;
+}
+
+.time-slot.hour {
+    background: #333;
+    font-weight: bold;
+    position: sticky;
+    left: 0;
+    z-index: 1;
+}
+
+.event {
+    background-color: #007BFF;
+    color: white;
+    padding: 2px 5px;
+    border-radius: 3px;
+    margin: 2px 0;
+    text-align: center;
+    width: 90%;
+}
+
+
