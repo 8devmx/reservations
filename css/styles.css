@@ -1,6 +1,4 @@
 @import '../node_modules/animate.css/animate.min.css';
-
-
 .sidebar .nav-link:hover {
     background-color: #495057; /* Color de fondo cuando se pasa el cursor */
     color: #fff; /* Color del texto cuando se pasa el cursor */
@@ -23,4 +21,12 @@
 
   .sidebar {
     transition: width 0.3s ease; /* Transición suave de ancho */
+  }
+  
+  .h2 {
+    font-family: 'Times New Roman', Times, serif;
+  }
+
+  #calendar {
+    font-family: 'Times New Roman', Times, serif;
   }

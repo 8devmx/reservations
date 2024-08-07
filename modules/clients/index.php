@@ -79,6 +79,7 @@
       </main>
     </div>
   </div>
+  <script src="../../js/general.js"></script>
   <script src="../../js/generalclients.js"></script>
   <script>
     const clearForm = () => {

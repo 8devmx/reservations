@@ -131,6 +131,7 @@
       </main>
     </div>
   </div>
+  <script src="../../js/general.js"></script>
   <script src="../../js/generalEvents.js"></script>
 
   <script>
