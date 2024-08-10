@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calendario Semanal</title>
+    <?php
+    include_once '../../includes/head.php';
+    require_once '../../includes/VistaSemanal.php';
+
+    $events = new Events();
+    $clients = $events->getAllClients();
+    ?>
     <link rel="stylesheet" href="../../css/Semanal.css">
     <style>
         .current-day {
@@ -11,9 +18,33 @@
             font-weight: bold;
             color: white;
         }
+
+        /* Estilo adicional para el layout con el sidebar */
+        body {
+            display: flex;
+        }
+
+        #calendar {
+            flex: 1;
+            padding-left: 250px; /* Ajusta este valor según el ancho del sidebar */
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px; /* Ancho del sidebar */
+            height: 100%;
+            background-color: #2c3e50; /* Color de fondo del sidebar */
+            color: #ecf0f1; /* Color del texto del sidebar */
+            padding: 20px;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
+    <?php include_once '../../includes/sidebar.php'; ?>
+
     <div id="calendar">
         <div class="header">
             <button id="prevWeek">&lt;</button>
@@ -45,7 +76,49 @@
             <!-- Aquí se rellenarán las horas y los días -->
         </div>
     </div>
+
+    <script src="../../js/generalDash.js"></script>
     <script>
+        const clearForm = () => {
+            title.value = '';
+            start_date.value = '';
+            start_hout.value = '';
+            end_date.value = '';
+            end_hour.value = '';
+            client.value = '';
+            status.value = 0;
+        }
+
+        const getAllData = (clientId = '') => {
+            const obj = {
+                action: 'showData',
+                client_id: clientId
+            };
+            fetch('../../includes/VistaSemanal.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(obj)
+            })
+            .then(response => response.json())
+            .then(json => {
+                let rowTemplate = '';
+                json.forEach(row => {
+                    rowTemplate += `
+                    <tr>
+                        <td>${row.title}</td>
+                        <td>${row.start_date + " " + row.start_hout}</td>
+                        <td>${row.end_date + " " + row.end_hour}</td>
+                        <td>${row.client_name}</td>
+                        <td>${row.active == 1 ? "Activo" : "Inactivo"}</td>
+                    </tr>
+                    `;
+                });
+                document.getElementById('results').innerHTML = rowTemplate;
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const daysContainer = document.getElementById('days');
             const currentWeek = document.getElementById('currentWeek');
@@ -109,3 +182,4 @@
     </script>
 </body>
 </html>
+
