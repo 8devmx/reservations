@@ -7,6 +7,12 @@
       </a>
     </li>
     <li class="nav-item">
+      <a href="http://localhost/reservations/modules/VistaSemanal/index.php" class="nav-link text-white d-flex">
+        <div class="icon me-2"><i class="bi bi-person"></i></div>
+        <p>VistaSemanal</p>
+      </a>
+    </li>
+    <li class="nav-item">
       <a href="http://localhost/reservations/modules/users/index.php" class="nav-link text-white d-flex">
         <div class="icon me-2"><i class="bi bi-person"></i></div>
         <p>Usuarios</p>
