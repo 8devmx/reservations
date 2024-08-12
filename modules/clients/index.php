@@ -10,7 +10,6 @@
 </head>
 
 <body>
-  <?php include_once '../../includes/header.php'; ?>
   <div class="container-fluid">
     <div class="row">
       <?php include_once '../../includes/sidebar.php'; ?>

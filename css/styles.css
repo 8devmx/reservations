@@ -15,12 +15,3 @@
     display: none;
 }
 
-/* Estilos adicionales para la transición suave */
-.sidebar.collapsed {
-    width: 55px; /* Ancho colapsado */
-    
-  }
-
-  .sidebar {
-    transition: width 0.3s ease; /* Transición suave de ancho */
-  }

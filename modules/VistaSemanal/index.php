@@ -6,15 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
     <!-- Incluir CSS Principal -->
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="../../css/styles.css">
 
     <?php
-    include_once 'includes/head.php';
-    require_once 'includes/events.php';
+    include_once '../../includes/head.php';
+    require_once '../../includes/events.php';
     ?>
 
-    <!-- Bootstrap CSS v5.2.1 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+    <!-- Bootstrap CSS v5.3.2 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
 
     <!-- FullCalendar -->
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
@@ -33,16 +33,35 @@
 </head>
 
 <body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2">
+                <?php include_once '../../includes/sidebar.php'; ?>
+                <script src="../../js/generalDash.js"></script>
+
+            </div>
+
+            <!-- Main content -->
+            <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4" id="viewData">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Vista Semanal</h1>
+                </div>
+                <div id='calendar'></div>
+            </main>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const calendarEl = document.getElementById('calendar');
             const calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
+                initialView: 'timeGridWeek', // Establece la vista inicial a la vista semanal
                 locale: 'es',
                 headerToolbar: {
                     left: 'prev,next today',
                     center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    right: 'timeGridWeek,timeGridDay' // Solo permite vista semanal y diaria
                 },
                 views: {
                     timeGrid: {
@@ -53,7 +72,7 @@
                     }
                 },
                 events: function(fetchInfo, successCallback, failureCallback) {
-                    fetch('includes/events.php', {
+                    fetch('../../includes/events.php', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'
@@ -126,14 +145,14 @@
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col-12">
-                                            <label for="client_id">Clientes:</label>
+                                            <label for="client">Clientes:</label>
                                             <select name="client" id="client" class="form-control swal2-input">
                                                 <option value="" selected>Seleccione una Opción</option>
                                                 <?php 
-                                                require_once "includes/Clients.php";
+                                                require_once '../../includes/Clients.php';
                                                 $clientes = new Clients();
                                                 $data = $clientes->getClientsForEvents();
-                                                foreach ($data as $key => $value) {
+                                                foreach ($data as $value) {
                                                 ?> 
                                                 <option value="<?php echo $value['id']; ?>"><?php echo $value['name']; ?></option>
                                                 <?php
@@ -144,14 +163,14 @@
                                     </div>
                                     <div class="row mb-3">
                                         <div class="col-12">
-                                            <label for="user_id">Usuarios:</label>
+                                            <label for="user">Usuarios:</label>
                                             <select name="user" id="user" class="form-control swal2-input">
                                                 <option value="" selected>Seleccione una Opción</option>
                                                 <?php 
-                                                require_once "includes/Users.php";
+                                                require_once '../../includes/Users.php';
                                                 $usuario = new User();
                                                 $data = $usuario->getUserForEvents();
-                                                foreach ($data as $key => $value) {
+                                                foreach ($data as $value) {
                                                 ?> 
                                                 <option value="<?php echo $value['id']; ?>"><?php echo $value['name']; ?></option>
                                                 <?php
@@ -164,10 +183,6 @@
                             </form>
                         `,
                         focusConfirm: false,
-                        didOpen: () => {
-                            loadClients();
-                            loadUsers();
-                        },
                         preConfirm: () => {
                             const title = Swal.getPopup().querySelector('#title').value;
                             const description = Swal.getPopup().querySelector('#description').value;
@@ -201,7 +216,7 @@
                                 user_id
                             } = result.value;
 
-                            fetch('includes/events.php', {
+                            fetch('../../includes/events.php', {
                                     method: 'POST',
                                     headers: {
                                         'Content-Type': 'application/json'
@@ -238,19 +253,10 @@
             calendar.render();
         });
     </script>
-    <div class="container-fluid">
-        <div class="row">
-            <main class="col-md-12 ms-sm-auto col-lg-12 px-md-4" id="viewData">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Dashboard</h1>
-                </div>
-                <div id='calendar'></div>
-            </main>
-        </div>
-    </div>
 
     <!-- Bootstrap JavaScript Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
 </body>
+
 </html>

@@ -1,122 +1,113 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <link rel="stylesheet" href="../../css/styles.css">
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f4f4;
-      color: #333;
-    }
-  
-    .border-bottom {
-      border-bottom: 3px solid #007bff !important;
-    }
-    .h2 {
-      color: #007bff;
-      font-weight: 600;
-    }
-    .list-group {
-      margin-top: 20px;
-    }
-    .list-group-item {
-      background-color: #ffffff;
-      border: none;
-      border-left: 5px solid #007bff;
-      margin-bottom: 10px;
-      padding: 20px;
-      border-radius: 5px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .list-group-item:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
-      border-left-color: #28a745; /* Cambia el borde izquierdo al verde */
-    }
-    .list-group-item h5 {
-      margin-bottom: 10px;
-      color: #343a40;
-      font-size: 18px;
-    }
-    .list-group-item p {
-      margin: 5px 0;
-      color: #555;
-    }
-    .list-group-item p strong {
-      color: #333;
-    }
-    .list-group-item .status {
-      display: inline-block;
-      padding: 5px 10px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-    .status-activo {
-      background-color: #28a745; /* Verde para activo */
-      color: white;
-    }
-    .status-inactivo {
-      background-color: #dc3545; /* Rojo para inactivo */
-      color: white;
-    }
-  </style>
-  <?php
-  include_once '../../includes/head.php';
-  require_once '../../includes/events.php';
-  $events = new Events();
-  $clients = $events->getClients();
-  ?>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="../../css/styles.css">
+    <?php
+    include_once '../../includes/head.php';
+    require_once '../../includes/dashboard.php';
+
+    $events = new Events();
+    $clients = $events->getClients(); // Obtener solo los clientes activos
+    ?>
+    <style>
+        /* Estilo para la palabra Activo */
+        .status-active {
+            color: #28a745; /* Verde para el texto Activo */
+            font-weight: bold;
+        }
+
+        /* Estilo para la palabra Inactivo */
+        .status-inactive {
+            color: #dc3545; /* Rojo para el texto Inactivo */
+            font-weight: bold;
+        }
+
+        /* Estilo general para cada tarjeta de reservación */
+        .reservation-item {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 8px;
+            padding: 15px;
+            background-color: #f8f9fa;
+        }
+
+        /* Efecto hover para la tarjeta de reservación */
+        .reservation-item:hover {
+            transform: translateY(-5px); /* Mueve la tarjeta hacia arriba */
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Añade sombra */
+            background-color: #e9ecef; /* Cambia ligeramente el color de fondo */
+        }
+    </style>
 </head>
 <body>
-  <?php include_once '../../includes/header.php'; ?>
-  <div class="container-fluid">
-    <div class="row">
-      <?php include_once '../../includes/sidebar.php'; ?>
-      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 animate_animated animate_faster">
-        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-          <h1 class="h2">Reservaciones</h1>
+    <div class="container-fluid">
+        <div class="row">
+            <?php include_once '../../includes/sidebar.php'; ?>
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 bg-light" id="viewData">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Reservaciones del día</h1>
+                </div>
+                <div class="form-group">
+                    <label for="client_filter" class="h6 mb-1">Filtrar por Cliente:</label>
+                    <select name="client_filter" id="client_filter" class="form-select w-50 bg-light mb-2">
+                        <option value="" selected>Todos</option>
+                        <?php foreach ($clients as $client): ?>
+                            <option value="<?php echo $client->id; ?>"><?php echo $client->name; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div id="reservationList" class="reservation-list"></div>
+            </main>
         </div>
-        <div class="list-group" id="results"></div>
-      </main>
     </div>
-  </div>
-  <script src="../../js/generalEvents.js"></script>
-  <script>
-    const getAllData = (query = '') => {
-      const obj = {
-        action: 'showData',
-        query: query
-      }
-      fetch('../../includes/events.php', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(obj)
-        })
-        .then(response => response.json())
-        .then(json => {
-          let listTemplate = '';
-          json.forEach(row => {
-            const statusClass = row.active == 1 ? 'status-activo' : 'status-inactivo';
-            const statusText = row.active == 1 ? 'Activo' : 'Inactivo';
-            listTemplate += `
-            <div class="list-group-item">
-              <h5>${row.title}</h5>
-              <p><strong>Cliente:</strong> ${row.client}</p>
-              <p><strong>Fecha de Inicio:</strong> ${row.start_date + " " + row.start_hout}</p>
-              <p><strong>Fecha de Fin:</strong> ${row.end_date + " " + row.end_hour}</p>
-              <p><strong>Status:</strong> <span class="status ${statusClass}">${statusText}</span></p>
-            </div>
-            `;
-          });
-          results.innerHTML = listTemplate;
-        })
-    }
+    <script src="../../js/generalDash.js"></script>
+    <script>
+        const getAllData = (clientId = '') => {
+            const obj = {
+                action: 'showData',
+                client_id: clientId
+            };
+            fetch('../../includes/dashboard.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(obj)
+            })
+            .then(response => response.json())
+            .then(json => {
+                let listTemplate = '';
+                if (json.length > 0) {
+                    json.forEach(item => {
+                        const statusClass = item.active == 1 ? 'status-active' : 'status-inactive'; // Determinar la clase basada en el estado
 
-    getAllData();
-  </script>
+                        listTemplate += `
+                        <div class="reservation-item mb-3 p-3 shadow-sm">
+                            <h4 class="mb-1">${item.title}</h4>
+                            <p class="mb-1"><strong>Fecha de Inicio:</strong> ${item.start_date} ${item.start_hout}</p>
+                            <p class="mb-1"><strong>Fecha de Fin:</strong> ${item.end_date} ${item.end_hour}</p>
+                            <p class="mb-1"><strong>Cliente:</strong> ${item.client}</p>
+                            <p class="mb-1"><strong>Status:</strong> <span class="${statusClass}">${item.active == 1 ? "Activo" : "Inactivo"}</span></p>
+                        </div>
+                        `;
+                    });
+                } else {
+                    listTemplate = '<p>No hay reservaciones para mostrar.</p>';
+                }
+                document.getElementById('reservationList').innerHTML = listTemplate;
+            });
+        }
+
+        // Inicializar con todos los datos del día
+        getAllData();
+
+        // Manejar el cambio en el select de clientes
+        document.getElementById('client_filter').addEventListener('change', (e) => {
+            const clientId = e.target.value;
+            getAllData(clientId);
+        });
+    </script>
 </body>
 </html>
