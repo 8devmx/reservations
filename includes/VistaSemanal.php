@@ -45,4 +45,8 @@ class Events
         return $clients;
     }
 }
+<<<<<<< Updated upstream
 ?>
+=======
+?>
+>>>>>>> Stashed changes
